@@ -60,19 +60,22 @@ function DateChip({ date, attended, onToggle, extra = false }) {
   )
 }
 
-function StudentCard({ s, schedData, attended, notes, isExp, month, year, addingFor,
+function StudentCard({ s, schedData, attended, savedAttended, notes, isExp, month, year, addingFor,
   customDate, customTime, onToggle, onExpand, onAddExtra, onSetNotes,
   onStartAdd, onCancelAdd, onSetDate, onSetTime }) {
 
-  const scheduled  = scheduledDatesFor(schedData.schedule, schedData.changes, month, year)
-  const count      = attended.length
-  const amount     = count * (s.fee_per_session || 0)
-  const extraDates = attended.filter(d => isExtra(d))
+  const scheduled   = scheduledDatesFor(schedData.schedule, schedData.changes, month, year)
+  const count       = attended.length
+  const amount      = count * (s.fee_per_session || 0)
+  const extraDates  = attended.filter(d => isExtra(d))
   const hasSchedule = schedData.schedule.length > 0
   const hasChanges  = schedData.changes.length > 0
 
+  // Có thay đổi chưa lưu không?
+  const isDirty = JSON.stringify([...attended].sort()) !== JSON.stringify([...savedAttended].sort())
+
   return (
-    <div className={`bg-white rounded-2xl border transition-all ${isExp ? 'border-blue-200 shadow-md' : 'border-slate-200 shadow-sm'}`}>
+    <div className={`bg-white rounded-2xl border transition-all ${isExp ? 'border-blue-200 shadow-md' : isDirty ? 'border-amber-300 shadow-sm' : 'border-slate-200 shadow-sm'}`}>
       {/* Card header — tap to expand */}
       <button
         onClick={onExpand}
@@ -91,6 +94,9 @@ function StudentCard({ s, schedData, attended, notes, isExp, month, year, adding
 
         {/* Stats */}
         <div className="flex items-center gap-2 shrink-0">
+          {isDirty && (
+            <span className="w-2 h-2 rounded-full bg-amber-400 shrink-0" title="Có thay đổi chưa lưu" />
+          )}
           {count > 0 ? (
             <div className="text-right">
               <p className="text-xs font-black text-primary">{count} buổi</p>
@@ -207,6 +213,7 @@ export default function Sessions() {
   const [students, setStudents]       = useState([])
   const [scheduleMap, setScheduleMap] = useState({})
   const [sessionData, setSessionData] = useState({})
+  const [savedIds, setSavedIds]       = useState(new Set()) // student IDs có record trong DB
   const [expanded, setExpanded]       = useState({})
   const [addingFor, setAddingFor]     = useState(null)
   const [customDate, setCustomDate]   = useState('')
@@ -227,8 +234,9 @@ export default function Sessions() {
     allSchedules.forEach(s => { sMap[s.student_id] = { schedule: s.schedule || [], changes: s.changes || [] } })
     setScheduleMap(sMap)
     const data = {}
-    sessions.forEach(s => { data[s.student_id] = { dates: s.dates || [], notes: s.notes || '' } })
+    sessions.forEach(s => { data[s.student_id] = { dates: s.dates || [], notes: s.notes || '', savedDates: s.dates || [] } })
     setSessionData(data)
+    setSavedIds(new Set(sessions.map(s => s.student_id)))
     setSaved(false)
   }
 
@@ -259,16 +267,19 @@ export default function Sessions() {
   const handleSave = async () => {
     setSaving(true)
     try {
-      const sessions = students.map(s => {
-        const dates = sessionData[s.id]?.dates || []
-        return {
-          student_id: s.id, month, year,
-          session_count: dates.length,
-          amount: dates.length * (s.fee_per_session || 0),
-          dates,
-          notes: sessionData[s.id]?.notes || null,
-        }
-      }).filter(s => s.session_count > 0)
+      const sessions = students
+        .map(s => {
+          const dates = sessionData[s.id]?.dates || []
+          return {
+            student_id: s.id, month, year,
+            session_count: dates.length,
+            amount: dates.length * (s.fee_per_session || 0),
+            dates,
+            notes: sessionData[s.id]?.notes || null,
+          }
+        })
+        // Lưu nếu có buổi học HOẶC đã có record trước (để update/xóa buổi cũ)
+        .filter(s => s.session_count > 0 || savedIds.has(s.student_id))
       await sessionsApi.bulkSave(sessions)
       setSaved(true)
       await loadData()
@@ -317,6 +328,7 @@ export default function Sessions() {
                 s={s}
                 schedData={scheduleMap[s.id] || { schedule: [], changes: [] }}
                 attended={sessionData[s.id]?.dates || []}
+                savedAttended={sessionData[s.id]?.savedDates || []}
                 notes={sessionData[s.id]?.notes || ''}
                 isExp={!!expanded[s.id]}
                 month={month}
