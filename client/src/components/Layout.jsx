@@ -5,18 +5,19 @@ const navItems = [
   { to: '/weekly', icon: 'calendar_view_week', label: 'Lịch tuần' },
   { to: '/sessions', icon: 'fact_check', label: 'Điểm danh' },
   { to: '/reports', icon: 'bar_chart', label: 'Báo cáo' },
-  { to: '/receipts', icon: 'receipt_long', label: 'In phiếu học phí' },
+  { to: '/receipts', icon: 'receipt_long', label: 'Phiếu' },
 ]
 
 export default function Layout() {
   return (
-    <div className="min-h-screen bg-slate-100 text-slate-900 antialiased flex">
-      <aside className="fixed left-0 top-0 h-screen flex flex-col z-50 overflow-y-auto bg-slate-50 w-64 border-r border-slate-200 shadow-sm">
+    <div className="min-h-screen bg-slate-100 text-slate-900 antialiased">
+
+      {/* ── Desktop sidebar (lg+) ───────────────────────────────────────────── */}
+      <aside className="hidden lg:flex fixed left-0 top-0 h-screen flex-col z-50 overflow-y-auto bg-slate-50 w-64 border-r border-slate-200 shadow-sm">
         <div className="p-6 flex flex-col gap-1">
           <span className="text-xl font-black tracking-tighter text-blue-800 font-manrope">Aymond</span>
           <span className="font-manrope font-bold tracking-tight text-xs uppercase opacity-60">Tutoring Management</span>
         </div>
-
         <nav className="flex-1 px-3 py-4 flex flex-col gap-1">
           {navItems.map(item => (
             <NavLink
@@ -33,15 +34,55 @@ export default function Layout() {
             </NavLink>
           ))}
         </nav>
-
         <div className="p-4 border-t border-slate-200">
           <p className="text-[11px] text-slate-400 text-center font-inter">Quản lý dạy thêm tư nhân</p>
         </div>
       </aside>
 
-      <main className="flex-1 ml-64 min-h-screen p-6 md:p-8 flex flex-col">
-        <Outlet />
+      {/* ── Main content ────────────────────────────────────────────────────── */}
+      <main className="lg:ml-64 min-h-screen flex flex-col">
+        {/* Mobile top bar */}
+        <header className="lg:hidden sticky top-0 z-40 bg-white border-b border-slate-200 px-4 py-3 flex items-center">
+          <span className="text-lg font-black tracking-tighter text-blue-800 font-manrope">Aymond</span>
+        </header>
+
+        <div className="flex-1 p-4 md:p-6 lg:p-8 pb-24 lg:pb-8">
+          <Outlet />
+        </div>
       </main>
+
+      {/* ── Mobile bottom navigation bar ────────────────────────────────────── */}
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-slate-200"
+        style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
+        <div className="flex">
+          {navItems.map(item => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              className={({ isActive }) =>
+                `flex-1 flex flex-col items-center justify-center py-2 gap-0.5 transition-colors ${
+                  isActive
+                    ? 'text-blue-700'
+                    : 'text-slate-400 hover:text-slate-600'
+                }`
+              }
+            >
+              {({ isActive }) => (
+                <>
+                  <span className={`material-symbols-outlined text-[22px] ${isActive ? 'text-blue-700' : ''}`}
+                    style={{ fontVariationSettings: isActive ? "'FILL' 1" : "'FILL' 0" }}>
+                    {item.icon}
+                  </span>
+                  <span className={`text-[10px] font-bold ${isActive ? 'text-blue-700' : 'text-slate-400'}`}>
+                    {item.label}
+                  </span>
+                </>
+              )}
+            </NavLink>
+          ))}
+        </div>
+      </nav>
+
     </div>
   )
 }

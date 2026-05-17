@@ -220,7 +220,7 @@ export default function Students() {
         </button>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+      <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden overflow-x-auto">
         {students.length === 0 ? (
           <div className="p-16 text-center">
             <span className="material-symbols-outlined text-5xl text-slate-300 block mb-3">group</span>
