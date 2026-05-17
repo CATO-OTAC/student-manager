@@ -6,36 +6,68 @@ import html2canvas from 'html2canvas'
 const now = new Date()
 const DAY_NAMES = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7']
 
-// Save PDF — uses native macOS save dialog when inside Aymond.app (WKWebView),
-// falls back to browser download otherwise.
-function savePDF(pdf, filename) {
-  const dataUri = pdf.output('datauristring')
-  if (window.webkit?.messageHandlers?.savePDF) {
-    window.webkit.messageHandlers.savePDF.postMessage({ data: dataUri, filename })
-  } else {
-    pdf.save(filename)
+// Xuất PDF bằng window.print() — browser tự render font đúng, không bị lỗi tiếng Việt.
+// Trên iPhone: Safari hiện "Lưu vào File" hoặc "AirPrint → PDF".
+// Trên Mac app (WKWebView): dùng html2canvas + native save dialog riêng.
+function printReceiptHTML(elementIds, filename) {
+  // Lấy HTML của một hoặc nhiều receipt elements
+  const els = (Array.isArray(elementIds) ? elementIds : [elementIds])
+    .map(id => document.getElementById(id))
+    .filter(Boolean)
+  if (els.length === 0) return
+
+  const receiptHTMLs = els.map(el => `
+    <div style="page-break-after: always;">
+      ${el.outerHTML}
+    </div>
+  `).join('')
+
+  const html = `<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>${filename}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=block" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 24px; background: white; }
+    @media print {
+      body { padding: 0; }
+      @page { margin: 8mm; }
+      * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    }
+  </style>
+</head>
+<body>
+  ${receiptHTMLs}
+  <script>
+    document.fonts.ready.then(function() { window.print() })
+  <\/script>
+</body>
+</html>`
+
+  const blob = new Blob([html], { type: 'text/html;charset=utf-8' })
+  const url  = URL.createObjectURL(blob)
+  const win  = window.open(url, '_blank')
+  if (!win) {
+    // Popup bị block (hiếm gặp) — mở trong tab hiện tại
+    window.location.href = url
   }
+  setTimeout(() => URL.revokeObjectURL(url), 60000)
 }
 
-// Đợi font Inter load đầy đủ trước khi html2canvas chụp
-// (tránh lỗi font tiếng Việt bị sai/mất dấu)
-async function waitForFonts() {
-  await document.fonts.ready
-  const weights = [400, 500, 600, 700, 800, 900]
-  await Promise.allSettled(
-    weights.map(w => document.fonts.load(`${w} 16px Inter`))
-  )
-}
+// Chỉ dùng html2canvas khi chạy trong Mac app (WKWebView)
+const isNativeApp = () => !!window.webkit?.messageHandlers?.savePDF
 
 async function captureReceipt(el) {
-  await waitForFonts()
+  await document.fonts.ready
   return html2canvas(el, {
     scale: 2.5,
     backgroundColor: '#ffffff',
     useCORS: true,
     logging: false,
     onclone: (_doc, clonedEl) => {
-      // Ép font rõ ràng trên element được clone để tránh fallback
       clonedEl.style.fontFamily = 'Inter, Arial, sans-serif'
     },
   })
@@ -177,17 +209,23 @@ function ReceiptModal({ session, month, year, onClose }) {
 
   const exportSingle = async () => {
     setExporting(true)
+    const filename = `phieu-${(session.students?.name || 'hs').replace(/\s+/g, '-')}-t${month}-${year}.pdf`
     try {
-      const el = document.getElementById('receipt-modal-inner')
-      if (!el) return
-      const canvas = await captureReceipt(el)
-      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
-      const imgData = canvas.toDataURL('image/png')
-      const imgWidth  = 190
-      const imgHeight = (canvas.height * imgWidth) / canvas.width
-      pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight)
-      const filename = `phieu-${(session.students?.name || 'hs').replace(/\s+/g, '-')}-t${month}-${year}.pdf`
-      savePDF(pdf, filename)
+      if (isNativeApp()) {
+        // Mac Aymond app: html2canvas + native save dialog
+        const el = document.getElementById('receipt-modal-inner')
+        if (!el) return
+        const canvas = await captureReceipt(el)
+        const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
+        const imgData   = canvas.toDataURL('image/png')
+        const imgWidth  = 190
+        const imgHeight = (canvas.height * imgWidth) / canvas.width
+        pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight)
+        window.webkit.messageHandlers.savePDF.postMessage({ data: pdf.output('datauristring'), filename })
+      } else {
+        // Web / iPhone: mở tab mới + window.print() — font đúng 100%
+        printReceiptHTML('receipt-modal-inner', filename)
+      }
     } finally {
       setExporting(false)
     }
@@ -265,20 +303,28 @@ export default function Receipts() {
   const totalIncome = sessions.reduce((s, x) => s + (x.amount || 0), 0)
 
   const exportAll = async () => {
-    if (!hiddenRef.current || sessions.length === 0) return
+    if (sessions.length === 0) return
     setPrintingAll(true)
+    const filename = `phieu-hoc-phi-thang-${month}-${year}.pdf`
     try {
-      const pdf   = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
-      const items = hiddenRef.current.querySelectorAll('.receipt-item')
-      for (let i = 0; i < items.length; i++) {
-        const canvas = await captureReceipt(items[i])
-        const imgData   = canvas.toDataURL('image/png')
-        const imgWidth  = 190
-        const imgHeight = (canvas.height * imgWidth) / canvas.width
-        if (i > 0) pdf.addPage()
-        pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight)
+      if (isNativeApp() && hiddenRef.current) {
+        // Mac Aymond app: html2canvas từng trang
+        const pdf   = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
+        const items = hiddenRef.current.querySelectorAll('.receipt-item')
+        for (let i = 0; i < items.length; i++) {
+          const canvas = await captureReceipt(items[i])
+          const imgData   = canvas.toDataURL('image/png')
+          const imgWidth  = 190
+          const imgHeight = (canvas.height * imgWidth) / canvas.width
+          if (i > 0) pdf.addPage()
+          pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight)
+        }
+        window.webkit.messageHandlers.savePDF.postMessage({ data: pdf.output('datauristring'), filename })
+      } else {
+        // Web / iPhone: tất cả phiếu trong 1 tab, print → PDF nhiều trang
+        const ids = sessions.map(s => `export-${s.id}`)
+        printReceiptHTML(ids, filename)
       }
-      savePDF(pdf, `phieu-hoc-phi-thang-${month}-${year}.pdf`)
     } finally {
       setPrintingAll(false)
     }
