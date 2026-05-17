@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { sessionsApi } from '../lib/api'
 import jsPDF from 'jspdf'
 import html2canvas from 'html2canvas'
@@ -137,6 +137,19 @@ function ReceiptContent({ session, month, year, id }) {
 
 function ReceiptModal({ session, month, year, onClose }) {
   const [exporting, setExporting] = useState(false)
+  const previewRef = useRef(null)
+  const [scale, setScale] = useState(1)
+
+  useEffect(() => {
+    const el = previewRef.current
+    if (!el) return
+    const observer = new ResizeObserver(() => {
+      const available = el.offsetWidth - 48 // padding
+      setScale(Math.min(1, available / 560))
+    })
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
 
   const exportSingle = async () => {
     setExporting(true)
@@ -162,35 +175,42 @@ function ReceiptModal({ session, month, year, onClose }) {
       className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 overflow-y-auto"
       onClick={e => { if (e.target === e.currentTarget) onClose() }}
     >
-      <div className="flex justify-center min-h-full p-4 py-8">
-        <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl h-fit">
+      <div className="flex justify-center min-h-full sm:p-4 sm:py-8">
+        <div className="bg-white sm:rounded-2xl shadow-xl w-full max-w-2xl h-fit sm:h-fit" style={{ marginTop: 'env(safe-area-inset-top)' }}>
 
-          {/* Header cố định trên cùng */}
-          <div className="sticky top-0 p-6 border-b border-slate-100 flex justify-between items-center bg-white rounded-t-2xl z-10">
+          {/* Header */}
+          <div className="sticky top-0 px-4 sm:px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-white sm:rounded-t-2xl z-10">
             <div>
-              <h3 className="text-xl font-bold text-slate-900 font-manrope">Chi tiết phiếu học phí</h3>
-              <p className="text-sm text-slate-500 mt-0.5">{session.students?.name} · Tháng {month}/{year}</p>
+              <h3 className="text-base font-bold text-slate-900 font-manrope">Phiếu học phí</h3>
+              <p className="text-sm text-slate-500">{session.students?.name} · T{month}/{year}</p>
             </div>
-            <button onClick={onClose} className="text-slate-400 hover:text-slate-700 transition-colors">
-              <span className="material-symbols-outlined">close</span>
+            <button onClick={onClose} className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-500">
+              <span className="material-symbols-outlined text-[20px]">close</span>
             </button>
           </div>
 
-          {/* Preview — hiển thị toàn bộ không clip */}
-          <div className="flex justify-center p-6 bg-slate-100">
-            <div style={{ borderRadius: '12px', overflow: 'hidden', boxShadow: '0 4px 24px rgba(0,0,0,0.12)' }}>
-              <ReceiptContent session={session} month={month} year={year} id="receipt-modal-inner" />
+          {/* Preview — scale để vừa màn hình */}
+          <div ref={previewRef} className="flex justify-center p-6 bg-slate-100">
+            <div style={{
+              transformOrigin: 'top center',
+              transform: `scale(${scale})`,
+              marginBottom: scale < 1 ? `calc((${scale} - 1) * 100%)` : 0,
+            }}>
+              <div style={{ borderRadius: '12px', overflow: 'hidden', boxShadow: '0 4px 24px rgba(0,0,0,0.12)' }}>
+                <ReceiptContent session={session} month={month} year={year} id="receipt-modal-inner" />
+              </div>
             </div>
           </div>
 
           {/* Footer */}
-          <div className="p-4 border-t border-slate-100 bg-white rounded-b-2xl flex items-center justify-end gap-3">
+          <div className="px-4 sm:px-6 py-4 border-t border-slate-100 bg-white sm:rounded-b-2xl flex items-center gap-3"
+            style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}>
             <button onClick={onClose}
-              className="px-5 py-2 rounded-lg font-bold text-slate-600 hover:bg-slate-100 transition-colors text-sm">
+              className="flex-1 sm:flex-none px-5 py-2.5 rounded-xl font-bold text-slate-600 bg-slate-100 text-sm">
               Đóng
             </button>
             <button onClick={exportSingle} disabled={exporting}
-              className="bg-primary text-white py-2.5 px-6 rounded-xl font-bold text-sm flex items-center gap-2 shadow-md shadow-primary/30 hover:opacity-90 transition-all disabled:opacity-50">
+              className="flex-1 sm:flex-none bg-primary text-white py-2.5 px-6 rounded-xl font-bold text-sm flex items-center justify-center gap-2 shadow-md shadow-primary/30 disabled:opacity-50">
               <span className="material-symbols-outlined text-[18px]">picture_as_pdf</span>
               {exporting ? 'Đang xuất...' : 'Xuất PDF'}
             </button>

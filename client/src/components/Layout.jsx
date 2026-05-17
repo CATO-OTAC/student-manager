@@ -42,7 +42,8 @@ export default function Layout() {
       {/* ── Main content ────────────────────────────────────────────────────── */}
       <main className="lg:ml-64 min-h-screen flex flex-col">
         {/* Mobile top bar */}
-        <header className="lg:hidden sticky top-0 z-40 bg-white border-b border-slate-200 px-4 py-3 flex items-center">
+        <header className="lg:hidden sticky top-0 z-40 bg-white border-b border-slate-200 flex items-center"
+          style={{ paddingTop: 'env(safe-area-inset-top)', paddingLeft: '1rem', paddingRight: '1rem', paddingBottom: '0.75rem' }}>
           <span className="text-lg font-black tracking-tighter text-blue-800 font-manrope">Aymond</span>
         </header>
 
