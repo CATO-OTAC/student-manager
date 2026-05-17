@@ -241,25 +241,23 @@ export default function Receipts() {
   }
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900 font-manrope">In phiếu học phí</h1>
-          <p className="text-sm text-slate-500">Xem chi tiết và xuất phiếu PDF cho phụ huynh</p>
-        </div>
-        <div className="flex items-center gap-3">
+    <div className="max-w-2xl mx-auto">
+      <div className="mb-5">
+        <h1 className="text-xl font-bold text-slate-900 font-manrope mb-3">Phiếu học phí</h1>
+        <div className="flex items-center gap-2">
           <select value={month} onChange={e => setMonth(Number(e.target.value))}
-            className="border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
+            className="flex-1 border border-slate-200 rounded-xl px-3 py-2.5 text-sm bg-white font-bold focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
             {months.map(m => <option key={m} value={m}>Tháng {m}</option>)}
           </select>
           <select value={year} onChange={e => setYear(Number(e.target.value))}
-            className="border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
+            className="w-24 border border-slate-200 rounded-xl px-3 py-2.5 text-sm bg-white font-bold focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
             {years.map(y => <option key={y} value={y}>{y}</option>)}
           </select>
           <button onClick={exportAll} disabled={sessions.length === 0 || printingAll}
-            className="bg-primary text-white py-2.5 px-6 rounded-xl font-bold text-sm flex items-center gap-2 shadow-lg shadow-primary/20 hover:opacity-90 transition-all disabled:opacity-50">
-            <span className="material-symbols-outlined text-[20px]">picture_as_pdf</span>
-            {printingAll ? 'Đang xuất...' : 'Xuất PDF tất cả'}
+            className="bg-primary text-white py-2.5 px-4 rounded-xl font-bold text-sm flex items-center gap-1.5 shadow-md shadow-primary/20 hover:opacity-90 disabled:opacity-50 shrink-0">
+            <span className="material-symbols-outlined text-[18px]">picture_as_pdf</span>
+            <span className="hidden sm:inline">{printingAll ? 'Đang xuất...' : 'Xuất tất cả'}</span>
+            <span className="sm:hidden">{printingAll ? '...' : 'PDF'}</span>
           </button>
         </div>
       </div>
@@ -270,7 +268,7 @@ export default function Receipts() {
           <p className="text-slate-400">Chưa có dữ liệu điểm danh tháng {month}/{year}</p>
         </div>
       ) : (
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden overflow-x-auto">
           <div className="px-6 py-4 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
             <h2 className="font-bold text-slate-900 font-manrope">
               Tháng {month}/{year} · {sessions.length} học sinh
@@ -281,12 +279,12 @@ export default function Receipts() {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-slate-50">
-                <th className="px-6 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-500">Học sinh</th>
-                <th className="px-6 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-500">Lớp</th>
-                <th className="px-6 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-500">Các buổi học</th>
-                <th className="px-6 py-4 text-right text-[10px] uppercase tracking-widest font-bold text-slate-500">Buổi</th>
-                <th className="px-6 py-4 text-right text-[10px] uppercase tracking-widest font-bold text-slate-500">Học phí</th>
-                <th className="px-6 py-4 text-center text-[10px] uppercase tracking-widest font-bold text-slate-500">Phiếu</th>
+                <th className="px-4 py-3.5 text-[10px] uppercase tracking-widest font-bold text-slate-500">Học sinh</th>
+                <th className="px-4 py-3.5 text-[10px] uppercase tracking-widest font-bold text-slate-500 hidden sm:table-cell">Lớp</th>
+                <th className="px-4 py-3.5 text-[10px] uppercase tracking-widest font-bold text-slate-500 hidden md:table-cell">Ngày học</th>
+                <th className="px-4 py-3.5 text-right text-[10px] uppercase tracking-widest font-bold text-slate-500">Buổi</th>
+                <th className="px-4 py-3.5 text-right text-[10px] uppercase tracking-widest font-bold text-slate-500">Học phí</th>
+                <th className="px-4 py-3.5 text-center text-[10px] uppercase tracking-widest font-bold text-slate-500">Phiếu</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-200">
@@ -294,18 +292,16 @@ export default function Receipts() {
                 const dates = sortDates(Array.isArray(s.dates) ? s.dates : [])
                 return (
                   <tr key={s.id} className="hover:bg-slate-50 transition-colors duration-150">
-                    <td className="px-6 py-4 font-bold text-slate-900">{s.students?.name}</td>
-                    <td className="px-6 py-4 text-sm text-slate-500">{s.students?.class_name || '—'}</td>
-                    <td className="px-6 py-4">
+                    <td className="px-4 py-3.5 font-bold text-slate-900 text-sm">{s.students?.name}</td>
+                    <td className="px-4 py-3.5 text-sm text-slate-500 hidden sm:table-cell">{s.students?.class_name || '—'}</td>
+                    <td className="px-4 py-3.5 hidden md:table-cell">
                       {dates.length > 0 ? (
                         <div className="flex flex-wrap gap-1">
                           {dates.map(d => {
                             const { day, dayName, time, isExtra } = parseDateChip(d)
                             return (
                               <span key={d} className={`text-xs px-1.5 py-0.5 rounded font-bold border ${
-                                isExtra
-                                  ? 'bg-amber-50 text-amber-700 border-amber-200'
-                                  : 'bg-blue-50 text-primary border-blue-100'
+                                isExtra ? 'bg-amber-50 text-amber-700 border-amber-200' : 'bg-blue-50 text-primary border-blue-100'
                               }`}>
                                 {dayName} {day}{time ? ` ${time}` : ''}
                               </span>
@@ -314,9 +310,9 @@ export default function Receipts() {
                         </div>
                       ) : <span className="text-slate-400 text-sm">—</span>}
                     </td>
-                    <td className="px-6 py-4 text-right font-bold text-slate-700">{s.session_count}</td>
-                    <td className="px-6 py-4 text-right">
-                      <span className="font-bold text-sm text-secondary bg-secondary-container/20 px-3 py-1 rounded-full">
+                    <td className="px-4 py-3.5 text-right font-bold text-slate-700 text-sm">{s.session_count}</td>
+                    <td className="px-4 py-3.5 text-right">
+                      <span className="font-bold text-sm text-secondary bg-secondary-container/20 px-2.5 py-1 rounded-full whitespace-nowrap">
                         {(s.amount || 0).toLocaleString('vi-VN')}đ
                       </span>
                     </td>

@@ -206,17 +206,13 @@ export default function Students() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900 font-manrope">Học sinh</h1>
-          <p className="text-sm text-slate-500">Nhấn vào học sinh để xem chi tiết</p>
-        </div>
-        <button
-          onClick={openAdd}
-          className="bg-primary text-white py-2.5 px-6 rounded-xl font-bold text-sm flex items-center gap-2 shadow-lg shadow-primary/20 hover:opacity-90 transition-all"
-        >
+      <div className="flex items-center justify-between mb-5">
+        <h1 className="text-xl font-bold text-slate-900 font-manrope">Học sinh</h1>
+        <button onClick={openAdd}
+          className="bg-primary text-white py-2.5 px-4 rounded-xl font-bold text-sm flex items-center gap-1.5 shadow-md shadow-primary/20 hover:opacity-90 transition-all">
           <span className="material-symbols-outlined text-[20px]">add</span>
-          Thêm học sinh
+          <span className="hidden sm:inline">Thêm học sinh</span>
+          <span className="sm:hidden">Thêm</span>
         </button>
       </div>
 
@@ -231,11 +227,11 @@ export default function Students() {
             <table className="w-full text-left border-collapse min-w-[600px]">
               <thead>
                 <tr className="bg-slate-50">
-                  <th className="px-6 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-500">Học sinh</th>
-                  <th className="px-6 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-500">Lớp</th>
-                  <th className="px-6 py-4 text-right text-[10px] uppercase tracking-widest font-bold text-slate-500">Học phí / buổi</th>
-                  <th className="px-6 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-500">Lịch học</th>
-                  <th className="px-6 py-4 w-10"></th>
+                  <th className="px-4 py-3.5 text-[10px] uppercase tracking-widest font-bold text-slate-500">Học sinh</th>
+                  <th className="px-4 py-3.5 text-[10px] uppercase tracking-widest font-bold text-slate-500 hidden sm:table-cell">Lớp</th>
+                  <th className="px-4 py-3.5 text-right text-[10px] uppercase tracking-widest font-bold text-slate-500">Học phí</th>
+                  <th className="px-4 py-3.5 text-[10px] uppercase tracking-widest font-bold text-slate-500 hidden md:table-cell">Lịch học</th>
+                  <th className="px-4 py-3.5 w-8"></th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200">
@@ -259,13 +255,13 @@ export default function Students() {
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-sm font-medium text-slate-600">{s.class_name || '—'}</td>
-                      <td className="px-6 py-4 text-right">
+                      <td className="px-4 py-3.5 text-sm font-medium text-slate-600 hidden sm:table-cell">{s.class_name || '—'}</td>
+                      <td className="px-4 py-3.5 text-right">
                         <span className="font-bold text-sm text-secondary bg-secondary-container/20 px-3 py-1 rounded-full">
                           {(s.fee_per_session || 0).toLocaleString('vi-VN')}đ
                         </span>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-4 py-3.5 hidden md:table-cell">
                         {schedule.length > 0 ? (
                           <div className="flex gap-1 flex-wrap">
                             {schedule.map((slot, i) => (
@@ -278,7 +274,7 @@ export default function Students() {
                           <span className="text-xs text-slate-400">Chưa đặt</span>
                         )}
                       </td>
-                      <td className="px-6 py-4 text-center">
+                      <td className="px-4 py-3.5 text-center">
                         <span className="material-symbols-outlined text-[18px] text-slate-300 group-hover:text-slate-500 transition-colors">
                           chevron_right
                         </span>

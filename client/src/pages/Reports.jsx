@@ -58,23 +58,18 @@ export default function Reports() {
   }
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900 font-manrope">Báo cáo thu nhập</h1>
-          <p className="text-sm text-slate-500">Thống kê thu nhập theo tháng hoặc theo năm</p>
-        </div>
-        <Link
-          to="/receipts"
-          className="px-5 py-2.5 rounded-xl font-bold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 transition-colors shadow-sm text-sm flex items-center gap-2"
-        >
-          <span className="material-symbols-outlined text-[18px]">receipt_long</span>
-          Xem phiếu học phí →
+    <div className="max-w-2xl mx-auto">
+      <div className="flex items-start justify-between mb-5">
+        <h1 className="text-xl font-bold text-slate-900 font-manrope">Báo cáo</h1>
+        <Link to="/receipts"
+          className="flex items-center gap-1.5 text-sm font-bold text-primary">
+          <span className="material-symbols-outlined text-[16px]">receipt_long</span>
+          Phiếu học phí
         </Link>
       </div>
 
       {/* Period selector */}
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 mb-6 flex items-center gap-4 flex-wrap">
+      <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 mb-5 flex items-center gap-3 flex-wrap">
         <div className="flex gap-1 bg-slate-100 rounded-lg p-1">
           {[['month', 'Theo tháng'], ['year', 'Theo năm']].map(([val, label]) => (
             <button key={val} onClick={() => setPeriod(val)}
@@ -109,14 +104,14 @@ export default function Reports() {
       {/* ── MONTH VIEW ── */}
       {period === 'month' && (
         <>
-          <div className="grid grid-cols-3 gap-4 mb-6">
-            <StatCard icon="payments" label={`Thu nhập tháng ${month}/${year}`}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5">
+            <StatCard icon="payments" label={`Thu nhập T${month}/${year}`}
               value={`${monthIncome.toLocaleString('vi-VN')}đ`} iconBg="bg-emerald-50 text-emerald-600" />
-            <StatCard icon="group" label="Học sinh" value={`${monthStudents} học sinh`} iconBg="bg-primary-fixed text-primary" />
-            <StatCard icon="event_available" label="Tổng số buổi" value={`${monthSessionCount} buổi`} iconBg="bg-secondary-fixed text-secondary" />
+            <StatCard icon="group" label="Học sinh" value={`${monthStudents} em`} iconBg="bg-primary-fixed text-primary" />
+            <StatCard icon="event_available" label="Tổng buổi" value={`${monthSessionCount} buổi`} iconBg="bg-secondary-fixed text-secondary" />
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden overflow-x-auto">
             {monthSessions.length === 0 ? (
               <div className="p-12 text-center">
                 <span className="material-symbols-outlined text-4xl text-slate-300 block mb-2">bar_chart</span>
@@ -174,16 +169,16 @@ export default function Reports() {
       {/* ── YEAR VIEW ── */}
       {period === 'year' && (
         <>
-          <div className="grid grid-cols-3 gap-4 mb-6">
-            <StatCard icon="payments" label={`Tổng thu nhập ${year}`}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5">
+            <StatCard icon="payments" label={`Tổng thu ${year}`}
               value={`${yearTotal.income.toLocaleString('vi-VN')}đ`} iconBg="bg-emerald-50 text-emerald-600" />
-            <StatCard icon="event_available" label="Tổng số buổi cả năm"
+            <StatCard icon="event_available" label="Tổng buổi"
               value={`${yearTotal.sessions} buổi`} iconBg="bg-primary-fixed text-primary" />
-            <StatCard icon="calendar_month" label="Tháng có thu nhập"
-              value={`${yearTotal.months} / 12 tháng`} iconBg="bg-secondary-fixed text-secondary" />
+            <StatCard icon="calendar_month" label="Tháng có dữ liệu"
+              value={`${yearTotal.months}/12`} iconBg="bg-secondary-fixed text-secondary" />
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden overflow-x-auto">
             <div className="px-6 py-4 border-b border-slate-200 bg-slate-50">
               <h2 className="font-bold text-slate-900 font-manrope">Thu nhập theo tháng — {year}</h2>
             </div>
