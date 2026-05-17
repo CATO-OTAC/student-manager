@@ -21,6 +21,8 @@ app.use(cors({
 }))
 app.use(express.json())
 
+app.get('/health', (_req, res) => res.json({ ok: true }))
+
 app.use('/api/students', studentsRouter)
 app.use('/api/sessions', sessionsRouter)
 app.use('/api/schedules', schedulesRouter)
