@@ -331,7 +331,7 @@ export default function Students() {
               <div>
                 <label className="block text-sm font-bold text-slate-700 mb-1.5">Lớp</label>
                 <select value={form.class_name} onChange={e => set('class_name', e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium bg-white h-[42px]">
+                  className="w-full px-4 py-2.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium bg-white">
                   <option value="">— Chọn lớp —</option>
                   {CLASS_OPTIONS.map(c => <option key={c} value={c}>{c}</option>)}
                 </select>
@@ -341,7 +341,7 @@ export default function Students() {
                 <input required type="number" min={0} value={form.fee_per_session}
                   onChange={e => set('fee_per_session', e.target.value)}
                   placeholder="VD: 100000"
-                  className="w-full px-4 py-2.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium h-[42px]" />
+                  className="w-full px-4 py-2.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium" />
               </div>
             </div>
 
