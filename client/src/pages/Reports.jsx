@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { TeachNav } from '../components/SectionNav'
 import { sessionsApi } from '../lib/api'
 
 const now = new Date()
@@ -59,13 +59,9 @@ export default function Reports() {
 
   return (
     <div className="max-w-2xl mx-auto">
+      <TeachNav />
       <div className="flex items-start justify-between mb-5">
         <h1 className="text-xl font-bold text-slate-900 font-manrope">Báo cáo</h1>
-        <Link to="/receipts"
-          className="flex items-center gap-1.5 text-sm font-bold text-primary">
-          <span className="material-symbols-outlined text-[16px]">receipt_long</span>
-          Phiếu học phí
-        </Link>
       </div>
 
       {/* Period selector */}

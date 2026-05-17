@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { schoolApi } from '../lib/api'
+import { StudyNav } from '../components/SectionNav'
 
 const PRIORITY = {
   high:   { label: 'Gấp',    bg: 'bg-red-100',    text: 'text-red-700',    border: 'border-red-200'   },
@@ -125,6 +126,7 @@ export default function Homework() {
 
   return (
     <div className="max-w-2xl mx-auto">
+      <StudyNav />
       <div className="flex items-center justify-between mb-4">
         <div>
           <h1 className="text-xl font-bold text-slate-900 font-manrope">Bài tập</h1>

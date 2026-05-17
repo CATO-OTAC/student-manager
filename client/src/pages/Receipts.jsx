@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { sessionsApi } from '../lib/api'
+import { TeachNav } from '../components/SectionNav'
 import jsPDF from 'jspdf'
 import html2canvas from 'html2canvas'
 
@@ -332,6 +333,7 @@ export default function Receipts() {
 
   return (
     <div className="max-w-2xl mx-auto">
+      <TeachNav />
       <div className="mb-5">
         <h1 className="text-xl font-bold text-slate-900 font-manrope mb-3">Phiếu học phí</h1>
         <div className="flex items-center gap-2">
