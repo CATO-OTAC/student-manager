@@ -84,7 +84,7 @@ function EventPill({ event, compact = false }) {
         <div className="flex items-center gap-1.5">
           <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${c.dot}`} />
           <p className={`font-bold text-xs truncate ${c.text}`}>{event.subject}</p>
-          {!compact && <span className={`text-[10px] font-bold px-1 py-0.5 rounded ${c.bg} ${c.text} border ${c.border} ml-auto shrink-0`}>Trường</span>}
+          {!compact && <span className={`text-[10px] font-bold px-1 py-0.5 rounded ${c.bg} ${c.text} border ${c.border} ml-auto shrink-0`}>Đi học</span>}
         </div>
         {!compact && <p className={`text-[10px] ${c.text} opacity-70 mt-0.5`}>
           {event.start_time}–{event.end_time}{event.room ? ` · ${event.room}` : ''}
@@ -98,7 +98,7 @@ function EventPill({ event, compact = false }) {
         <div className="flex items-center gap-1.5">
           <div className="w-1.5 h-1.5 rounded-full shrink-0 bg-blue-500" />
           <p className="font-bold text-xs truncate text-blue-800">{event.student.name}</p>
-          {!compact && <span className="text-[10px] font-bold px-1 py-0.5 rounded bg-blue-100 text-blue-700 border border-blue-200 ml-auto shrink-0">Dạy</span>}
+          {!compact && <span className="text-[10px] font-bold px-1 py-0.5 rounded bg-blue-100 text-blue-700 border border-blue-200 ml-auto shrink-0">Dạy thêm</span>}
         </div>
         {!compact && <p className="text-[10px] text-blue-600 opacity-70 mt-0.5">
           {event.slot.start_time}–{event.slot.end_time}
@@ -338,7 +338,7 @@ export default function Calendar() {
       {/* Legend */}
       <div className="flex items-center gap-4 mt-5 px-2 flex-wrap">
         <div className="flex items-center gap-1.5 text-xs text-slate-500">
-          <div className="w-2 h-2 rounded-full bg-violet-500" /><span>Trường</span>
+          <div className="w-2 h-2 rounded-full bg-violet-500" /><span>Đi học</span>
         </div>
         <div className="flex items-center gap-1.5 text-xs text-slate-500">
           <div className="w-2 h-2 rounded-full bg-blue-500" /><span>Dạy thêm</span>
