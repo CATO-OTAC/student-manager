@@ -17,6 +17,30 @@ function savePDF(pdf, filename) {
   }
 }
 
+// Đợi font Inter load đầy đủ trước khi html2canvas chụp
+// (tránh lỗi font tiếng Việt bị sai/mất dấu)
+async function waitForFonts() {
+  await document.fonts.ready
+  const weights = [400, 500, 600, 700, 800, 900]
+  await Promise.allSettled(
+    weights.map(w => document.fonts.load(`${w} 16px Inter`))
+  )
+}
+
+async function captureReceipt(el) {
+  await waitForFonts()
+  return html2canvas(el, {
+    scale: 2.5,
+    backgroundColor: '#ffffff',
+    useCORS: true,
+    logging: false,
+    onclone: (_doc, clonedEl) => {
+      // Ép font rõ ràng trên element được clone để tránh fallback
+      clonedEl.style.fontFamily = 'Inter, Arial, sans-serif'
+    },
+  })
+}
+
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 const isExtraDate = (d) => d.startsWith('extra:')
 const stripExtra  = (d) => isExtraDate(d) ? d.slice(6) : d       // remove prefix
@@ -156,7 +180,7 @@ function ReceiptModal({ session, month, year, onClose }) {
     try {
       const el = document.getElementById('receipt-modal-inner')
       if (!el) return
-      const canvas = await html2canvas(el, { scale: 2.5, backgroundColor: '#ffffff', useCORS: true, logging: false })
+      const canvas = await captureReceipt(el)
       const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
       const imgData = canvas.toDataURL('image/png')
       const imgWidth  = 190
@@ -247,7 +271,7 @@ export default function Receipts() {
       const pdf   = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
       const items = hiddenRef.current.querySelectorAll('.receipt-item')
       for (let i = 0; i < items.length; i++) {
-        const canvas = await html2canvas(items[i], { scale: 2.5, backgroundColor: '#ffffff', useCORS: true, logging: false })
+        const canvas = await captureReceipt(items[i])
         const imgData   = canvas.toDataURL('image/png')
         const imgWidth  = 190
         const imgHeight = (canvas.height * imgWidth) / canvas.width
