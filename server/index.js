@@ -7,6 +7,7 @@ import { existsSync } from 'fs'
 import studentsRouter from './routes/students.js'
 import sessionsRouter from './routes/sessions.js'
 import schedulesRouter from './routes/schedules.js'
+import schoolRouter from './routes/school.js'
 
 dotenv.config()
 
@@ -26,6 +27,7 @@ app.get('/health', (_req, res) => res.json({ ok: true }))
 app.use('/api/students', studentsRouter)
 app.use('/api/sessions', sessionsRouter)
 app.use('/api/schedules', schedulesRouter)
+app.use('/api/school', schoolRouter)
 
 // Serve built React app — priority: env var → project root client/dist → skip
 const clientDist =

@@ -27,3 +27,21 @@ export const schedulesApi = {
     api.post(`/schedules/${studentId}/changes`, data).then(r => r.data),
   deleteChange: (id) => api.delete(`/schedules/change/${id}`),
 }
+
+export const schoolApi = {
+  getTimetable: () => api.get('/school/timetable').then(r => r.data),
+  addSlot: (data) => api.post('/school/timetable', data).then(r => r.data),
+  updateSlot: (id, data) => api.put(`/school/timetable/${id}`, data).then(r => r.data),
+  deleteSlot: (id) => api.delete(`/school/timetable/${id}`),
+
+  getHomework: () => api.get('/school/homework').then(r => r.data),
+  addHomework: (data) => api.post('/school/homework', data).then(r => r.data),
+  updateHomework: (id, data) => api.put(`/school/homework/${id}`, data).then(r => r.data),
+  deleteHomework: (id) => api.delete(`/school/homework/${id}`),
+  toggleDone: (id, done) => api.put(`/school/homework/${id}`, { done }).then(r => r.data),
+
+  getExams: () => api.get('/school/exams').then(r => r.data),
+  addExam: (data) => api.post('/school/exams', data).then(r => r.data),
+  updateExam: (id, data) => api.put(`/school/exams/${id}`, data).then(r => r.data),
+  deleteExam: (id) => api.delete(`/school/exams/${id}`),
+}

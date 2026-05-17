@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { NavLink } from 'react-router-dom'
 import { studentsApi, schedulesApi } from '../lib/api'
 import Modal from '../components/Modal'
 import ScheduleModal from '../components/ScheduleModal'
@@ -206,6 +207,18 @@ export default function Students() {
 
   return (
     <div>
+      {/* Sub-nav Dạy thêm */}
+      <div className="flex bg-white rounded-2xl border border-slate-200 shadow-sm p-1 mb-5">
+        <NavLink to="/students"
+          className={({ isActive }) => `flex-1 py-2 rounded-xl text-xs font-bold text-center transition-all ${isActive ? 'bg-primary text-white shadow-sm' : 'text-slate-500'}`}>
+          Học sinh
+        </NavLink>
+        <NavLink to="/sessions"
+          className={({ isActive }) => `flex-1 py-2 rounded-xl text-xs font-bold text-center transition-all ${isActive ? 'bg-primary text-white shadow-sm' : 'text-slate-500'}`}>
+          Điểm danh
+        </NavLink>
+      </div>
+
       <div className="flex items-center justify-between mb-5">
         <h1 className="text-xl font-bold text-slate-900 font-manrope">Học sinh</h1>
         <button onClick={openAdd}
