@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir -p /Users/aymond/Downloads/student-manager/server/lib)",
+      "Bash(mkdir -p /Users/aymond/Downloads/student-manager/client/src/lib)",
+      "Bash(npm install *)",
+      "Read(//usr/local/bin/**)",
+      "Read(//Users/aymond/.nvm/versions/**)",
+      "Read(//opt/homebrew/bin/**)",
+      "Read(//opt/**)",
+      "Read(//Users/aymond/Downloads/HCMUS-Analyze-and-desgin-IS/prototype/**)",
+      "Bash(cat /Users/aymond/Downloads/HCMUS-Analyze-and-desgin-IS/prototype/src/index.css 2>/dev/null | head -80)",
+      "Read(//Users/aymond/Downloads/HCMUS-Analyze-and-desgin-IS/prototype/src/**)",
+      "Bash(xargs cat)",
+      "Bash(cat /Users/aymond/Downloads/HCMUS-Analyze-and-desgin-IS/src/frontend/src/components/AdminLayout.tsx 2>/dev/null)",
+      "Read(//Users/aymond/Downloads/HCMUS-Analyze-and-desgin-IS/src/frontend/src/components/**)",
+      "Bash(cat /Users/aymond/Downloads/HCMUS-Analyze-and-desgin-IS/src/frontend/src/components/AdminSidebar.tsx 2>/dev/null)",
+      "Bash(./node_modules/.bin/electron --version)",
+      "Bash(/Users/aymond/Downloads/student-manager/node_modules/electron/dist/Electron.app/Contents/MacOS/Electron --version)",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(list\\(d.keys\\(\\)\\)[:3]\\)\")",
+      "Bash(/Users/aymond/Downloads/student-manager/node_modules/.bin/electron /Users/aymond/Downloads/student-manager/electron/main.cjs)",
+      "Bash(/Users/aymond/Downloads/student-manager/node_modules/.bin/electron /Users/aymond/Downloads/student-manager)",
+      "Read(//Users/aymond/Library/Caches/electron/f71d58b9535ad2f1d90f09dd91a30fea648c4fe7e710e38a47d6983edd09e53f/**)",
+      "Bash(unzip -l \"/Users/aymond/Library/Caches/electron/f71d58b9535ad2f1d90f09dd91a30fea648c4fe7e710e38a47d6983edd09e53f/electron-v35.7.5-darwin-arm64.zip\")"
+    ]
+  }
+}

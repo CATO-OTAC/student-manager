@@ -1,0 +1,357 @@
+import { useState, useEffect, useRef } from 'react'
+import { sessionsApi } from '../lib/api'
+import jsPDF from 'jspdf'
+import html2canvas from 'html2canvas'
+
+const now = new Date()
+const DAY_NAMES = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7']
+
+// Save PDF — uses native macOS save dialog when inside Aymond.app (WKWebView),
+// falls back to browser download otherwise.
+function savePDF(pdf, filename) {
+  const dataUri = pdf.output('datauristring')
+  if (window.webkit?.messageHandlers?.savePDF) {
+    window.webkit.messageHandlers.savePDF.postMessage({ data: dataUri, filename })
+  } else {
+    pdf.save(filename)
+  }
+}
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+const isExtraDate = (d) => d.startsWith('extra:')
+const stripExtra  = (d) => isExtraDate(d) ? d.slice(6) : d       // remove prefix
+const getDatePart = (d) => stripExtra(d).slice(0, 10)
+const getTimePart = (d) => stripExtra(d).length > 10 ? stripExtra(d).slice(11) : null
+
+function parseDateChip(dateStr) {
+  const dp   = getDatePart(dateStr)
+  const time = isExtraDate(dateStr) ? getTimePart(dateStr) : null  // only show time for extras
+  const d    = new Date(dp + 'T00:00:00')
+  return { day: d.getDate(), month: d.getMonth() + 1, dayName: DAY_NAMES[d.getDay()], time, isExtra: isExtraDate(dateStr) }
+}
+
+// Sort dates by calendar order (stripping prefix first)
+function sortDates(dates) {
+  return [...dates].sort((a, b) => stripExtra(a).localeCompare(stripExtra(b)))
+}
+
+// ─── Receipt (100% inline styles → preview === PDF) ───────────────────────────
+
+function ReceiptContent({ session, month, year, id }) {
+  const fee   = session.students?.fee_per_session || 0
+  const dates = sortDates(Array.isArray(session.dates) ? session.dates : [])
+
+  const BASE = { fontFamily: "'Inter', 'Helvetica Neue', Arial, sans-serif" }
+
+  return (
+    <div id={id} style={{ ...BASE, backgroundColor: '#ffffff', width: '560px', padding: '48px', boxSizing: 'border-box' }}>
+
+      {/* ── Header ── */}
+      <div style={{ textAlign: 'center', marginBottom: '28px' }}>
+        <div style={{ display: 'inline-block', borderBottom: '3px solid #1e3a5f', paddingBottom: '16px', width: '100%' }}>
+          <h1 style={{ ...BASE, fontSize: '22px', fontWeight: '900', letterSpacing: '3px', color: '#1e3a5f', margin: '0 0 6px', textTransform: 'uppercase' }}>
+            Phiếu Thu Học Phí
+          </h1>
+          <p style={{ ...BASE, fontSize: '14px', color: '#64748b', margin: 0, fontWeight: '500' }}>
+            Tháng {month}/{year}
+          </p>
+        </div>
+      </div>
+
+      {/* ── Student info ── */}
+      <div style={{ backgroundColor: '#f8fafc', borderRadius: '10px', padding: '16px 20px', marginBottom: '24px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+          <span style={{ ...BASE, fontSize: '13px', color: '#64748b', fontWeight: '500' }}>Học sinh:</span>
+          <span style={{ ...BASE, fontSize: '17px', fontWeight: '800', color: '#1e3a5f' }}>{session.students?.name}</span>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ ...BASE, fontSize: '13px', color: '#64748b', fontWeight: '500' }}>Lớp:</span>
+          <span style={{ ...BASE, fontSize: '14px', fontWeight: '600', color: '#334155' }}>{session.students?.class_name || '—'}</span>
+        </div>
+      </div>
+
+      {/* ── Dates ── */}
+      {dates.length > 0 && (
+        <div style={{ marginBottom: '24px' }}>
+          <p style={{ ...BASE, fontSize: '10px', fontWeight: '700', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: '12px' }}>
+            Các buổi đã học ({dates.length} buổi)
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '8px' }}>
+            {dates.map(d => {
+              const { day, month: m, dayName, time, isExtra } = parseDateChip(d)
+              return (
+                <div key={d} style={{
+                  backgroundColor: isExtra ? '#fffbeb' : '#eff6ff',
+                  border: isExtra ? '1.5px solid #fcd34d' : '1.5px solid #bfdbfe',
+                  borderRadius: '8px',
+                  padding: '8px 4px',
+                  textAlign: 'center',
+                }}>
+                  <div style={{ ...BASE, fontSize: '9px', fontWeight: '700', color: isExtra ? '#b45309' : '#1d4ed8', letterSpacing: '0.5px' }}>
+                    {dayName}
+                  </div>
+                  <div style={{ ...BASE, fontSize: '15px', fontWeight: '900', color: isExtra ? '#b45309' : '#1d4ed8', lineHeight: '1.2' }}>
+                    {day}/{m}
+                  </div>
+                  {time && (
+                    <div style={{ ...BASE, fontSize: '9px', fontWeight: '700', color: isExtra ? '#b45309' : '#1d4ed8', marginTop: '2px' }}>
+                      {time}
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* ── Summary ── */}
+      <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: '16px', marginBottom: '20px' }}>
+        {[
+          ['Số buổi học:', `${session.session_count} buổi`],
+          ['Học phí / buổi:', `${fee.toLocaleString('vi-VN')}đ`],
+          ...(session.notes ? [['Ghi chú:', session.notes]] : []),
+        ].map(([label, value]) => (
+          <div key={label} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+            <span style={{ ...BASE, fontSize: '13px', color: '#64748b' }}>{label}</span>
+            <span style={{ ...BASE, fontSize: '13px', fontWeight: '700', color: '#334155' }}>{value}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* ── Total ── */}
+      <div style={{ borderTop: '2.5px solid #1e3a5f', paddingTop: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <span style={{ ...BASE, fontSize: '15px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '1px', color: '#1e3a5f' }}>
+          Tổng cộng:
+        </span>
+        <span style={{ ...BASE, fontSize: '28px', fontWeight: '900', color: '#855300' }}>
+          {(session.amount || 0).toLocaleString('vi-VN')}đ
+        </span>
+      </div>
+
+    </div>
+  )
+}
+
+// ─── Receipt detail modal ─────────────────────────────────────────────────────
+
+function ReceiptModal({ session, month, year, onClose }) {
+  const [exporting, setExporting] = useState(false)
+
+  const exportSingle = async () => {
+    setExporting(true)
+    try {
+      const el = document.getElementById('receipt-modal-inner')
+      if (!el) return
+      const canvas = await html2canvas(el, { scale: 2.5, backgroundColor: '#ffffff', useCORS: true, logging: false })
+      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
+      const imgData = canvas.toDataURL('image/png')
+      const imgWidth  = 190
+      const imgHeight = (canvas.height * imgWidth) / canvas.width
+      pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight)
+      const filename = `phieu-${(session.students?.name || 'hs').replace(/\s+/g, '-')}-t${month}-${year}.pdf`
+      savePDF(pdf, filename)
+    } finally {
+      setExporting(false)
+    }
+  }
+
+  return (
+    // Overlay scrollable — modal không bị giới hạn chiều cao, scroll toàn trang nếu cần
+    <div
+      className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 overflow-y-auto"
+      onClick={e => { if (e.target === e.currentTarget) onClose() }}
+    >
+      <div className="flex justify-center min-h-full p-4 py-8">
+        <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl h-fit">
+
+          {/* Header cố định trên cùng */}
+          <div className="sticky top-0 p-6 border-b border-slate-100 flex justify-between items-center bg-white rounded-t-2xl z-10">
+            <div>
+              <h3 className="text-xl font-bold text-slate-900 font-manrope">Chi tiết phiếu học phí</h3>
+              <p className="text-sm text-slate-500 mt-0.5">{session.students?.name} · Tháng {month}/{year}</p>
+            </div>
+            <button onClick={onClose} className="text-slate-400 hover:text-slate-700 transition-colors">
+              <span className="material-symbols-outlined">close</span>
+            </button>
+          </div>
+
+          {/* Preview — hiển thị toàn bộ không clip */}
+          <div className="flex justify-center p-6 bg-slate-100">
+            <div style={{ borderRadius: '12px', overflow: 'hidden', boxShadow: '0 4px 24px rgba(0,0,0,0.12)' }}>
+              <ReceiptContent session={session} month={month} year={year} id="receipt-modal-inner" />
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div className="p-4 border-t border-slate-100 bg-white rounded-b-2xl flex items-center justify-end gap-3">
+            <button onClick={onClose}
+              className="px-5 py-2 rounded-lg font-bold text-slate-600 hover:bg-slate-100 transition-colors text-sm">
+              Đóng
+            </button>
+            <button onClick={exportSingle} disabled={exporting}
+              className="bg-primary text-white py-2.5 px-6 rounded-xl font-bold text-sm flex items-center gap-2 shadow-md shadow-primary/30 hover:opacity-90 transition-all disabled:opacity-50">
+              <span className="material-symbols-outlined text-[18px]">picture_as_pdf</span>
+              {exporting ? 'Đang xuất...' : 'Xuất PDF'}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ─── Main page ────────────────────────────────────────────────────────────────
+
+export default function Receipts() {
+  const [month, setMonth] = useState(now.getMonth() + 1)
+  const [year, setYear]   = useState(now.getFullYear())
+  const [sessions, setSessions] = useState([])
+  const [selected, setSelected] = useState(null)
+  const [printingAll, setPrintingAll] = useState(false)
+  const hiddenRef = useRef(null)
+
+  const months = Array.from({ length: 12 }, (_, i) => i + 1)
+  const years  = [now.getFullYear() - 1, now.getFullYear(), now.getFullYear() + 1]
+
+  useEffect(() => {
+    sessionsApi.getByMonth(month, year).then(setSessions)
+  }, [month, year])
+
+  const totalIncome = sessions.reduce((s, x) => s + (x.amount || 0), 0)
+
+  const exportAll = async () => {
+    if (!hiddenRef.current || sessions.length === 0) return
+    setPrintingAll(true)
+    try {
+      const pdf   = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
+      const items = hiddenRef.current.querySelectorAll('.receipt-item')
+      for (let i = 0; i < items.length; i++) {
+        const canvas = await html2canvas(items[i], { scale: 2.5, backgroundColor: '#ffffff', useCORS: true, logging: false })
+        const imgData   = canvas.toDataURL('image/png')
+        const imgWidth  = 190
+        const imgHeight = (canvas.height * imgWidth) / canvas.width
+        if (i > 0) pdf.addPage()
+        pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight)
+      }
+      savePDF(pdf, `phieu-hoc-phi-thang-${month}-${year}.pdf`)
+    } finally {
+      setPrintingAll(false)
+    }
+  }
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900 font-manrope">In phiếu học phí</h1>
+          <p className="text-sm text-slate-500">Xem chi tiết và xuất phiếu PDF cho phụ huynh</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <select value={month} onChange={e => setMonth(Number(e.target.value))}
+            className="border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
+            {months.map(m => <option key={m} value={m}>Tháng {m}</option>)}
+          </select>
+          <select value={year} onChange={e => setYear(Number(e.target.value))}
+            className="border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
+            {years.map(y => <option key={y} value={y}>{y}</option>)}
+          </select>
+          <button onClick={exportAll} disabled={sessions.length === 0 || printingAll}
+            className="bg-primary text-white py-2.5 px-6 rounded-xl font-bold text-sm flex items-center gap-2 shadow-lg shadow-primary/20 hover:opacity-90 transition-all disabled:opacity-50">
+            <span className="material-symbols-outlined text-[20px]">picture_as_pdf</span>
+            {printingAll ? 'Đang xuất...' : 'Xuất PDF tất cả'}
+          </button>
+        </div>
+      </div>
+
+      {sessions.length === 0 ? (
+        <div className="bg-white rounded-xl shadow-sm p-16 text-center border border-slate-200">
+          <span className="material-symbols-outlined text-5xl text-slate-300 block mb-3">receipt_long</span>
+          <p className="text-slate-400">Chưa có dữ liệu điểm danh tháng {month}/{year}</p>
+        </div>
+      ) : (
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+          <div className="px-6 py-4 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
+            <h2 className="font-bold text-slate-900 font-manrope">
+              Tháng {month}/{year} · {sessions.length} học sinh
+            </h2>
+            <span className="font-black text-lg text-secondary font-manrope">{totalIncome.toLocaleString('vi-VN')}đ</span>
+          </div>
+
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="bg-slate-50">
+                <th className="px-6 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-500">Học sinh</th>
+                <th className="px-6 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-500">Lớp</th>
+                <th className="px-6 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-500">Các buổi học</th>
+                <th className="px-6 py-4 text-right text-[10px] uppercase tracking-widest font-bold text-slate-500">Buổi</th>
+                <th className="px-6 py-4 text-right text-[10px] uppercase tracking-widest font-bold text-slate-500">Học phí</th>
+                <th className="px-6 py-4 text-center text-[10px] uppercase tracking-widest font-bold text-slate-500">Phiếu</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-200">
+              {sessions.map(s => {
+                const dates = sortDates(Array.isArray(s.dates) ? s.dates : [])
+                return (
+                  <tr key={s.id} className="hover:bg-slate-50 transition-colors duration-150">
+                    <td className="px-6 py-4 font-bold text-slate-900">{s.students?.name}</td>
+                    <td className="px-6 py-4 text-sm text-slate-500">{s.students?.class_name || '—'}</td>
+                    <td className="px-6 py-4">
+                      {dates.length > 0 ? (
+                        <div className="flex flex-wrap gap-1">
+                          {dates.map(d => {
+                            const { day, dayName, time, isExtra } = parseDateChip(d)
+                            return (
+                              <span key={d} className={`text-xs px-1.5 py-0.5 rounded font-bold border ${
+                                isExtra
+                                  ? 'bg-amber-50 text-amber-700 border-amber-200'
+                                  : 'bg-blue-50 text-primary border-blue-100'
+                              }`}>
+                                {dayName} {day}{time ? ` ${time}` : ''}
+                              </span>
+                            )
+                          })}
+                        </div>
+                      ) : <span className="text-slate-400 text-sm">—</span>}
+                    </td>
+                    <td className="px-6 py-4 text-right font-bold text-slate-700">{s.session_count}</td>
+                    <td className="px-6 py-4 text-right">
+                      <span className="font-bold text-sm text-secondary bg-secondary-container/20 px-3 py-1 rounded-full">
+                        {(s.amount || 0).toLocaleString('vi-VN')}đ
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                      <button onClick={() => setSelected(s)}
+                        className="inline-flex items-center gap-1 text-sm font-bold text-primary hover:underline">
+                        <span className="material-symbols-outlined text-[16px]">open_in_new</span>
+                        Xem
+                      </button>
+                    </td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+
+          <div className="px-6 py-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between">
+            <span className="text-xs text-slate-500 font-medium">{sessions.length} phiếu · Tháng {month}/{year}</span>
+            <span className="font-black text-secondary font-manrope">{totalIncome.toLocaleString('vi-VN')}đ</span>
+          </div>
+        </div>
+      )}
+
+      {/* Hidden area for bulk export — cùng ReceiptContent, scale đồng nhất */}
+      <div ref={hiddenRef} style={{ position: 'fixed', left: '-9999px', top: 0, zIndex: -1 }} aria-hidden="true">
+        {sessions.map(s => (
+          <div key={s.id} className="receipt-item">
+            <ReceiptContent session={s} month={month} year={year} id={`export-${s.id}`} />
+          </div>
+        ))}
+      </div>
+
+      {selected && (
+        <ReceiptModal session={selected} month={month} year={year} onClose={() => setSelected(null)} />
+      )}
+    </div>
+  )
+}
