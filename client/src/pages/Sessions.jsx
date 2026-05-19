@@ -183,7 +183,6 @@ function StudentCard({ s, schedData, attended, savedAttended, notes, savedNotes,
               <div className="flex gap-2">
                 <input type="date" value={customDate} onChange={e => onSetDate(e.target.value)}
                   max={todayStr}
-                  autoFocus
                   className="flex-1 border border-slate-200 rounded-xl px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-amber-400" />
                 <input type="time" value={customTime} onChange={e => onSetTime(e.target.value)}
                   className="w-28 border border-slate-200 rounded-xl px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-amber-400" />

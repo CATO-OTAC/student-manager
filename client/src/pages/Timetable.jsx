@@ -36,7 +36,7 @@ function SemesterModal({ sem, onSave, onDelete, onClose }) {
         <div className="p-5 space-y-4 overflow-y-auto">
           <div>
             <label className="text-xs font-bold text-slate-500 uppercase tracking-wide block mb-1.5">Tên học kỳ *</label>
-            <input value={form.name} onChange={e => set('name', e.target.value)} placeholder="VD: Học kỳ 1 (2023-2024)" autoFocus
+            <input value={form.name} onChange={e => set('name', e.target.value)} placeholder="VD: Học kỳ 1 (2023-2024)"
               className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-300" />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -82,7 +82,7 @@ function SlotModal({ slot, onSave, onClose }) {
         <div className="px-5 py-4 space-y-3 overflow-y-auto">
           <div>
             <label className="text-xs font-bold text-slate-500 uppercase tracking-wide block mb-1.5">Tên môn *</label>
-            <input value={form.subject} onChange={e => set('subject', e.target.value)} autoFocus
+            <input value={form.subject} onChange={e => set('subject', e.target.value)}
               placeholder="Giải tích, LTMM..."
               className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-300 focus:border-violet-400" />
           </div>
