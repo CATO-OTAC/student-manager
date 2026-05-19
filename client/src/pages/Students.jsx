@@ -41,9 +41,9 @@ function StudentDetailModal({ student, schedule, colorIdx, onEdit, onDelete, onS
   const color = AVATAR_COLORS[colorIdx % AVATAR_COLORS.length]
 
   return (
-    <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-0 sm:p-4"
+    <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4"
       onClick={e => { if (e.target === e.currentTarget) onClose() }}>
-      <div className="bg-white w-full sm:max-w-sm sm:rounded-2xl rounded-t-2xl shadow-xl flex flex-col max-h-[90vh]"
+      <div className="bg-white w-full sm:max-w-sm sm:rounded-2xl rounded-t-2xl shadow-xl flex flex-col max-h-[90dvh]"
         style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
 
         {/* Header */}

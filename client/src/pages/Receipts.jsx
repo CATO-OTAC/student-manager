@@ -49,8 +49,8 @@ function printReceiptHTML(elementIds, filename) {
 </html>`
 
   const blob = new Blob([html], { type: 'text/html;charset=utf-8' })
-  const url  = URL.createObjectURL(blob)
-  const win  = window.open(url, '_blank')
+  const url = URL.createObjectURL(blob)
+  const win = window.open(url, '_blank')
   if (!win) {
     // Popup bị block (hiếm gặp) — mở trong tab hiện tại
     window.location.href = url
@@ -76,14 +76,14 @@ async function captureReceipt(el) {
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 const isExtraDate = (d) => d.startsWith('extra:')
-const stripExtra  = (d) => isExtraDate(d) ? d.slice(6) : d       // remove prefix
+const stripExtra = (d) => isExtraDate(d) ? d.slice(6) : d       // remove prefix
 const getDatePart = (d) => stripExtra(d).slice(0, 10)
 const getTimePart = (d) => stripExtra(d).length > 10 ? stripExtra(d).slice(11) : null
 
 function parseDateChip(dateStr) {
-  const dp   = getDatePart(dateStr)
+  const dp = getDatePart(dateStr)
   const time = isExtraDate(dateStr) ? getTimePart(dateStr) : null  // only show time for extras
-  const d    = new Date(dp + 'T00:00:00')
+  const d = new Date(dp + 'T00:00:00')
   return { day: d.getDate(), month: d.getMonth() + 1, dayName: DAY_NAMES[d.getDay()], time, isExtra: isExtraDate(dateStr) }
 }
 
@@ -95,7 +95,7 @@ function sortDates(dates) {
 // ─── Receipt (100% inline styles → preview === PDF) ───────────────────────────
 
 function ReceiptContent({ session, month, year, id }) {
-  const fee   = session.students?.fee_per_session || 0
+  const fee = session.students?.fee_per_session || 0
   const dates = sortDates(Array.isArray(session.dates) ? session.dates : [])
 
   const BASE = { fontFamily: "'Inter', 'Helvetica Neue', Arial, sans-serif" }
@@ -218,8 +218,8 @@ function ReceiptModal({ session, month, year, onClose }) {
         if (!el) return
         const canvas = await captureReceipt(el)
         const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
-        const imgData   = canvas.toDataURL('image/png')
-        const imgWidth  = 190
+        const imgData = canvas.toDataURL('image/png')
+        const imgWidth = 190
         const imgHeight = (canvas.height * imgWidth) / canvas.width
         pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight)
         window.webkit.messageHandlers.savePDF.postMessage({ data: pdf.output('datauristring'), filename })
@@ -235,7 +235,7 @@ function ReceiptModal({ session, month, year, onClose }) {
   return (
     // Overlay scrollable — modal không bị giới hạn chiều cao, scroll toàn trang nếu cần
     <div
-      className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 overflow-y-auto"
+      className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] overflow-y-auto"
       onClick={e => { if (e.target === e.currentTarget) onClose() }}
     >
       <div className="flex justify-center min-h-full sm:p-4 sm:py-8">
@@ -288,14 +288,14 @@ function ReceiptModal({ session, month, year, onClose }) {
 
 export default function Receipts() {
   const [month, setMonth] = useState(now.getMonth() + 1)
-  const [year, setYear]   = useState(now.getFullYear())
+  const [year, setYear] = useState(now.getFullYear())
   const [sessions, setSessions] = useState([])
   const [selected, setSelected] = useState(null)
   const [printingAll, setPrintingAll] = useState(false)
   const hiddenRef = useRef(null)
 
   const months = Array.from({ length: 12 }, (_, i) => i + 1)
-  const years  = [now.getFullYear() - 1, now.getFullYear(), now.getFullYear() + 1]
+  const years = [now.getFullYear() - 1, now.getFullYear(), now.getFullYear() + 1]
 
   useEffect(() => {
     sessionsApi.getByMonth(month, year).then(setSessions)
@@ -310,12 +310,12 @@ export default function Receipts() {
     try {
       if (isNativeApp() && hiddenRef.current) {
         // Mac Aymond app: html2canvas từng trang
-        const pdf   = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
+        const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
         const items = hiddenRef.current.querySelectorAll('.receipt-item')
         for (let i = 0; i < items.length; i++) {
           const canvas = await captureReceipt(items[i])
-          const imgData   = canvas.toDataURL('image/png')
-          const imgWidth  = 190
+          const imgData = canvas.toDataURL('image/png')
+          const imgWidth = 190
           const imgHeight = (canvas.height * imgWidth) / canvas.width
           if (i > 0) pdf.addPage()
           pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight)
@@ -392,9 +392,8 @@ export default function Receipts() {
                           {dates.map(d => {
                             const { day, dayName, time, isExtra } = parseDateChip(d)
                             return (
-                              <span key={d} className={`text-xs px-1.5 py-0.5 rounded font-bold border ${
-                                isExtra ? 'bg-amber-50 text-amber-700 border-amber-200' : 'bg-blue-50 text-primary border-blue-100'
-                              }`}>
+                              <span key={d} className={`text-xs px-1.5 py-0.5 rounded font-bold border ${isExtra ? 'bg-amber-50 text-amber-700 border-amber-200' : 'bg-blue-50 text-primary border-blue-100'
+                                }`}>
                                 {dayName} {day}{time ? ` ${time}` : ''}
                               </span>
                             )
