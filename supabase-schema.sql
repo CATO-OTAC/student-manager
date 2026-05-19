@@ -47,3 +47,67 @@ CREATE TABLE schedule_changes (
   notes TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Bảng Học kỳ (Semesters)
+CREATE TABLE IF NOT EXISTS semesters (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  name VARCHAR(200) NOT NULL,
+  start_date DATE NOT NULL,
+  end_date DATE NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Bảng lưu thời khóa biểu học tập (có thời hạn áp dụng)
+CREATE TABLE school_timetable (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  subject VARCHAR(200) NOT NULL,
+  day SMALLINT NOT NULL CHECK (day BETWEEN 1 AND 7),
+  start_time VARCHAR(10) NOT NULL,
+  end_time VARCHAR(10) NOT NULL,
+  room VARCHAR(100),
+  teacher VARCHAR(200),
+  color VARCHAR(50) DEFAULT 'violet',
+  start_date DATE,
+  end_date DATE,
+  semester_id UUID REFERENCES semesters(id) ON DELETE CASCADE,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Bảng lưu lịch thi
+CREATE TABLE exams (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  subject VARCHAR(200) NOT NULL,
+  exam_date DATE NOT NULL,
+  start_time VARCHAR(10),
+  location VARCHAR(200),
+  notes TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Bảng lưu bài tập về nhà
+CREATE TABLE homework (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  subject VARCHAR(200) NOT NULL,
+  title VARCHAR(300) NOT NULL,
+  due_date DATE,
+  priority VARCHAR(20) DEFAULT 'normal',
+  notes TEXT,
+  done BOOLEAN DEFAULT false,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Thêm semester_id vào bảng student_schedules hiện tại
+ALTER TABLE student_schedules ADD COLUMN IF NOT EXISTS semester_id UUID REFERENCES semesters(id) ON DELETE CASCADE;
+ALTER TABLE student_schedules DROP CONSTRAINT IF EXISTS student_schedules_student_id_key;
+ALTER TABLE student_schedules DROP CONSTRAINT IF EXISTS student_schedules_student_id_semester_id_key;
+ALTER TABLE student_schedules ADD CONSTRAINT student_schedules_student_id_semester_id_key UNIQUE(student_id, semester_id);
+
+-- Tắt Row Level Security (RLS) do ứng dụng dùng cho mục đích cá nhân, không có Authentication
+ALTER TABLE students DISABLE ROW LEVEL SECURITY;
+ALTER TABLE monthly_sessions DISABLE ROW LEVEL SECURITY;
+ALTER TABLE student_schedules DISABLE ROW LEVEL SECURITY;
+ALTER TABLE schedule_changes DISABLE ROW LEVEL SECURITY;
+ALTER TABLE semesters DISABLE ROW LEVEL SECURITY;
+ALTER TABLE school_timetable DISABLE ROW LEVEL SECURITY;
+ALTER TABLE exams DISABLE ROW LEVEL SECURITY;
+ALTER TABLE homework DISABLE ROW LEVEL SECURITY;

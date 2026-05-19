@@ -1,11 +1,11 @@
 import { useState, useEffect, Fragment } from 'react'
 import { Link } from 'react-router-dom'
 import { TeachNav } from '../components/SectionNav'
-import { studentsApi, sessionsApi, schedulesApi } from '../lib/api'
+import { studentsApi, sessionsApi, supabase } from '../lib/api'
 
 const DAYS_NAME = ['', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN']
 
-const isExtra  = (d) => d.startsWith('extra:')
+const isExtra = (d) => d.startsWith('extra:')
 const cleanStr = (d) => isExtra(d) ? d.slice(6) : d
 const dateOnly = (d) => cleanStr(d).slice(0, 10)
 const timeOnly = (d) => cleanStr(d).length > 10 ? cleanStr(d).slice(11) : null
@@ -13,6 +13,11 @@ const timeOnly = (d) => cleanStr(d).length > 10 ? cleanStr(d).slice(11) : null
 function dayShort(d) {
   const jsDay = new Date(dateOnly(d) + 'T00:00:00').getDay()
   return DAYS_NAME[jsDay === 0 ? 7 : jsDay]
+}
+
+const getLocalTodayStr = () => {
+  const d = new Date()
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 }
 
 function effectiveSchedule(defaultSchedule, changes, date) {
@@ -39,20 +44,21 @@ function scheduledDatesFor(defaultSchedule, changes, month, year) {
   return result
 }
 
-function DateChip({ date, attended, onToggle, extra = false }) {
+function DateChip({ date, attended, onToggle, extra = false, disabled = false }) {
   const day = parseInt(dateOnly(date).split('-')[2])
-  const tp  = timeOnly(date)
+  const tp = timeOnly(date)
   return (
     <button
+      disabled={disabled}
       onClick={e => { e.stopPropagation(); onToggle(date) }}
-      title={extra ? 'Nhấn để xóa' : ''}
-      className={`flex flex-col items-center w-11 rounded-xl border-2 py-1 transition-all active:scale-95 ${
-        extra
+      title={disabled ? 'Chưa đến ngày' : extra ? 'Nhấn để xóa' : ''}
+      className={`flex flex-col items-center w-11 rounded-xl border-2 py-1 transition-all ${disabled ? 'opacity-50 cursor-not-allowed' : 'active:scale-95'
+        } ${extra
           ? 'bg-amber-400 border-amber-400 text-white shadow-sm'
           : attended
             ? 'bg-primary border-primary text-white shadow-sm'
             : 'border-slate-300 bg-white text-slate-500'
-      }`}
+        }`}
     >
       <span className="text-[8px] font-bold opacity-70 leading-tight mt-0.5">{dayShort(date)}</span>
       <span className="text-sm font-black leading-none">{day}</span>
@@ -61,19 +67,22 @@ function DateChip({ date, attended, onToggle, extra = false }) {
   )
 }
 
-function StudentCard({ s, schedData, attended, savedAttended, notes, isExp, month, year, addingFor,
+function StudentCard({ s, schedData, attended, savedAttended, notes, savedNotes, isExp, month, year, addingFor,
   customDate, customTime, onToggle, onExpand, onAddExtra, onSetNotes,
-  onStartAdd, onCancelAdd, onSetDate, onSetTime }) {
+  onStartAdd, onCancelAdd, onSetDate, onSetTime, onSave, savingId }) {
 
-  const scheduled   = scheduledDatesFor(schedData.schedule, schedData.changes, month, year)
-  const count       = attended.length
-  const amount      = count * (s.fee_per_session || 0)
-  const extraDates  = attended.filter(d => isExtra(d))
+  const scheduled = scheduledDatesFor(schedData.schedule, schedData.changes, month, year)
+  const count = attended.length
+  const amount = count * (s.fee_per_session || 0)
+  const extraDates = attended.filter(d => isExtra(d))
   const hasSchedule = schedData.schedule.length > 0
-  const hasChanges  = schedData.changes.length > 0
+  const hasChanges = schedData.changes.length > 0
 
   // Có thay đổi chưa lưu không?
-  const isDirty = JSON.stringify([...attended].sort()) !== JSON.stringify([...savedAttended].sort())
+  const isDirty = JSON.stringify([...attended].sort()) !== JSON.stringify([...savedAttended].sort()) || notes !== savedNotes
+
+  const todayStr = getLocalTodayStr()
+  const isFutureDate = (dateStr) => dateOnly(dateStr) > todayStr
 
   return (
     <div className={`bg-white rounded-2xl border transition-all ${isExp ? 'border-blue-200 shadow-md' : isDirty ? 'border-amber-300 shadow-sm' : 'border-slate-200 shadow-sm'}`}>
@@ -134,6 +143,7 @@ function StudentCard({ s, schedData, attended, savedAttended, notes, isExp, mont
                 {scheduled.map(date => (
                   <DateChip key={date} date={date}
                     attended={attended.includes(date)}
+                    disabled={isFutureDate(date)}
                     onToggle={d => onToggle(s.id, d)} />
                 ))}
               </div>
@@ -158,7 +168,9 @@ function StudentCard({ s, schedData, attended, savedAttended, notes, isExp, mont
               </p>
               <div className="flex flex-wrap gap-2">
                 {extraDates.map(date => (
-                  <DateChip key={date} date={date} attended extra
+                  <DateChip key={date} date={date}
+                    attended extra
+                    disabled={isFutureDate(date)}
                     onToggle={d => onToggle(s.id, d)} />
                 ))}
               </div>
@@ -170,6 +182,7 @@ function StudentCard({ s, schedData, attended, savedAttended, notes, isExp, mont
             <div className="space-y-2">
               <div className="flex gap-2">
                 <input type="date" value={customDate} onChange={e => onSetDate(e.target.value)}
+                  max={todayStr}
                   autoFocus
                   className="flex-1 border border-slate-200 rounded-xl px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-amber-400" />
                 <input type="time" value={customTime} onChange={e => onSetTime(e.target.value)}
@@ -201,6 +214,20 @@ function StudentCard({ s, schedData, attended, savedAttended, notes, isExp, mont
               placeholder="Ghi chú tháng này..."
               className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" />
           </div>
+
+          {/* Save button if dirty */}
+          {isDirty && (
+            <div className="flex justify-end mt-4 pt-4 border-t border-blue-100">
+              <button
+                onClick={() => onSave(s.id)}
+                disabled={savingId === s.id}
+                className="bg-primary text-white px-5 py-2 rounded-xl font-bold text-sm shadow-md shadow-primary/20 hover:opacity-90 active:opacity-80 transition-opacity disabled:opacity-50 flex items-center gap-2"
+              >
+                <span className="material-symbols-outlined text-[18px]">save</span>
+                {savingId === s.id ? 'Đang lưu...' : 'Lưu điểm danh'}
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -210,46 +237,66 @@ function StudentCard({ s, schedData, attended, savedAttended, notes, isExp, mont
 export default function Sessions() {
   const now = new Date()
   const [month, setMonth] = useState(now.getMonth() + 1)
-  const [year, setYear]   = useState(now.getFullYear())
-  const [students, setStudents]       = useState([])
+  const [year, setYear] = useState(now.getFullYear())
+  const [students, setStudents] = useState([])
   const [scheduleMap, setScheduleMap] = useState({})
   const [sessionData, setSessionData] = useState({})
-  const [savedIds, setSavedIds]       = useState(new Set()) // student IDs có record trong DB
-  const [expanded, setExpanded]       = useState({})
-  const [addingFor, setAddingFor]     = useState(null)
-  const [customDate, setCustomDate]   = useState('')
-  const [customTime, setCustomTime]   = useState('19:00')
-  const [saving, setSaving] = useState(false)
-  const [saved, setSaved]   = useState(false)
+  const [savedIds, setSavedIds] = useState(new Set()) // student IDs có record trong DB
+  const [expanded, setExpanded] = useState({})
+  const [addingFor, setAddingFor] = useState(null)
+  const [customDate, setCustomDate] = useState('')
+  const [customTime, setCustomTime] = useState('19:00')
+  const [savingId, setSavingId] = useState(null)
 
   useEffect(() => { loadData() }, [month, year])
 
   const loadData = async () => {
-    const [allStudents, sessions, allSchedules] = await Promise.all([
+    const [allStudents, sessions, { data: allSchedules }, { data: allChanges }, { data: allSems }] = await Promise.all([
       studentsApi.getAll(),
       sessionsApi.getByMonth(month, year),
-      schedulesApi.getAll(),
+      supabase.from('student_schedules').select('*'),
+      supabase.from('schedule_changes').select('*'),
+      supabase.from('semesters').select('*')
     ])
     setStudents(allStudents)
+
+    const vDate = `${year}-${String(month).padStart(2, '0')}`
+    const activeSem = (allSems || []).find(s => {
+      if (!s.start_date || !s.end_date) return false
+      return vDate >= s.start_date.substring(0, 7) && vDate <= s.end_date.substring(0, 7)
+    })
+
     const sMap = {}
-    allSchedules.forEach(s => { sMap[s.student_id] = { schedule: s.schedule || [], changes: s.changes || [] } })
+    if (activeSem && allSchedules) {
+      allSchedules.filter(s => s.semester_id === activeSem.id).forEach(s => {
+        sMap[s.student_id] = { schedule: s.schedule || [], changes: (allChanges || []).filter(c => c.student_id === s.student_id) }
+      })
+    }
     setScheduleMap(sMap)
     const data = {}
-    sessions.forEach(s => { data[s.student_id] = { dates: s.dates || [], notes: s.notes || '', savedDates: s.dates || [] } })
+    allStudents.forEach(s => {
+      data[s.id] = { dates: [], notes: '', savedDates: [], savedNotes: '' }
+    })
+    sessions.forEach(s => {
+      data[s.student_id] = {
+        dates: s.dates || [],
+        notes: s.notes || '',
+        savedDates: s.dates || [],
+        savedNotes: s.notes || ''
+      }
+    })
     setSessionData(data)
     setSavedIds(new Set(sessions.map(s => s.student_id)))
-    setSaved(false)
   }
 
   const toggleDate = (studentId, dateStr) => {
     setSessionData(prev => {
-      const curr  = prev[studentId]?.dates || []
+      const curr = prev[studentId]?.dates || []
       const dates = curr.includes(dateStr)
         ? curr.filter(d => d !== dateStr)
         : [...curr, dateStr].sort((a, b) => cleanStr(a).localeCompare(cleanStr(b)))
       return { ...prev, [studentId]: { ...prev[studentId], dates } }
     })
-    setSaved(false)
   }
 
   const addExtra = (studentId) => {
@@ -265,32 +312,37 @@ export default function Sessions() {
 
   const toggleExpand = (id) => setExpanded(prev => ({ ...prev, [id]: !prev[id] }))
 
-  const handleSave = async () => {
-    setSaving(true)
+  const handleSaveStudent = async (studentId) => {
+    setSavingId(studentId)
     try {
-      const sessions = students
-        .map(s => {
-          const dates = sessionData[s.id]?.dates || []
-          return {
-            student_id: s.id, month, year,
-            session_count: dates.length,
-            amount: dates.length * (s.fee_per_session || 0),
-            dates,
-            notes: sessionData[s.id]?.notes || null,
-          }
-        })
-        // Lưu nếu có buổi học HOẶC đã có record trước (để update/xóa buổi cũ)
-        .filter(s => s.session_count > 0 || savedIds.has(s.student_id))
-      await sessionsApi.bulkSave(sessions)
-      setSaved(true)
-      await loadData()
+      const s = students.find(st => st.id === studentId)
+      const dates = sessionData[studentId]?.dates || []
+      const session = {
+        student_id: studentId, month, year,
+        session_count: dates.length,
+        amount: dates.length * (s.fee_per_session || 0),
+        dates,
+        notes: sessionData[studentId]?.notes || null,
+      }
+
+      await sessionsApi.bulkSave([session])
+
+      setSessionData(prev => ({
+        ...prev,
+        [studentId]: {
+          ...prev[studentId],
+          savedDates: dates,
+          savedNotes: sessionData[studentId]?.notes || ''
+        }
+      }))
+      setSavedIds(prev => new Set(prev).add(studentId))
     } finally {
-      setSaving(false)
+      setSavingId(null)
     }
   }
 
   const months = Array.from({ length: 12 }, (_, i) => i + 1)
-  const years  = [year - 1, year, year + 1]
+  const years = [year - 1, year, year + 1]
   const totalIncome = students.reduce((sum, s) =>
     sum + (sessionData[s.id]?.dates?.length || 0) * (s.fee_per_session || 0), 0)
 
@@ -332,6 +384,7 @@ export default function Sessions() {
                 attended={sessionData[s.id]?.dates || []}
                 savedAttended={sessionData[s.id]?.savedDates || []}
                 notes={sessionData[s.id]?.notes || ''}
+                savedNotes={sessionData[s.id]?.savedNotes || ''}
                 isExp={!!expanded[s.id]}
                 month={month}
                 year={year}
@@ -346,29 +399,18 @@ export default function Sessions() {
                 onCancelAdd={() => { setAddingFor(null); setCustomDate('') }}
                 onSetDate={setCustomDate}
                 onSetTime={setCustomTime}
+                onSave={handleSaveStudent}
+                savingId={savingId}
               />
             ))}
           </div>
 
-          {/* Total + Save */}
           <div className="bg-white rounded-2xl border border-slate-200 shadow-sm px-4 py-4 flex items-center justify-between mb-4">
             <div>
               <p className="text-xs text-slate-500 font-medium">Tổng tháng {month}/{year}</p>
               <p className="text-lg font-black text-secondary font-manrope">{totalIncome.toLocaleString('vi-VN')}đ</p>
             </div>
-            <button onClick={handleSave} disabled={saving}
-              className="bg-primary text-white px-6 py-3 rounded-xl font-bold text-sm shadow-md shadow-primary/20 hover:opacity-90 active:opacity-80 transition-opacity disabled:opacity-50 flex items-center gap-2">
-              <span className="material-symbols-outlined text-[18px]">save</span>
-              {saving ? 'Đang lưu...' : 'Lưu'}
-            </button>
           </div>
-
-          {saved && (
-            <div className="flex items-center justify-center gap-2 text-emerald-700 text-sm font-bold bg-emerald-50 border border-emerald-200 rounded-xl py-3">
-              <span className="material-symbols-outlined text-[16px]">check_circle</span>
-              Đã lưu thành công!
-            </div>
-          )}
         </>
       )}
     </div>

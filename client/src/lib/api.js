@@ -1,6 +1,14 @@
 import axios from 'axios'
+import { createClient } from '@supabase/supabase-js'
 
 const api = axios.create({ baseURL: '/api' })
+
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://your-project.supabase.co'
+const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'your-anon-key'
+export const supabase = createClient(supabaseUrl, supabaseKey)
+
+console.log("Supabase URL loaded:", import.meta.env.VITE_SUPABASE_URL ? "OK" : "MISSING");
+console.log("Supabase Key loaded:", import.meta.env.VITE_SUPABASE_ANON_KEY ? "OK" : "MISSING");
 
 export const studentsApi = {
   getAll: () => api.get('/students').then(r => r.data),

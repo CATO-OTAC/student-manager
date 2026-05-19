@@ -1,33 +1,33 @@
 import { useState, useEffect } from 'react'
 import { schoolApi, studentsApi, schedulesApi } from '../lib/api'
+import { SUBJECT_COLORS, getSubjectColor } from '../lib/theme'
 
 const DAYS = [
-  { value: 1, label: 'Thứ Hai',  short: 'T2' },
-  { value: 2, label: 'Thứ Ba',   short: 'T3' },
-  { value: 3, label: 'Thứ Tư',   short: 'T4' },
-  { value: 4, label: 'Thứ Năm',  short: 'T5' },
-  { value: 5, label: 'Thứ Sáu',  short: 'T6' },
-  { value: 6, label: 'Thứ Bảy',  short: 'T7' },
+  { value: 1, label: 'Thứ Hai', short: 'T2' },
+  { value: 2, label: 'Thứ Ba', short: 'T3' },
+  { value: 3, label: 'Thứ Tư', short: 'T4' },
+  { value: 4, label: 'Thứ Năm', short: 'T5' },
+  { value: 5, label: 'Thứ Sáu', short: 'T6' },
+  { value: 6, label: 'Thứ Bảy', short: 'T7' },
   { value: 7, label: 'Chủ Nhật', short: 'CN' },
 ]
 
-const SUBJECT_COLORS = [
-  { value: 'violet', bg: 'bg-violet-100', border: 'border-violet-300', text: 'text-violet-800', dot: 'bg-violet-400' },
-  { value: 'emerald', bg: 'bg-emerald-100', border: 'border-emerald-300', text: 'text-emerald-800', dot: 'bg-emerald-500' },
-  { value: 'orange', bg: 'bg-orange-100', border: 'border-orange-300', text: 'text-orange-800', dot: 'bg-orange-400' },
-  { value: 'rose', bg: 'bg-rose-100', border: 'border-rose-300', text: 'text-rose-800', dot: 'bg-rose-400' },
-  { value: 'teal', bg: 'bg-teal-100', border: 'border-teal-300', text: 'text-teal-800', dot: 'bg-teal-500' },
-  { value: 'amber', bg: 'bg-amber-100', border: 'border-amber-300', text: 'text-amber-800', dot: 'bg-amber-400' },
-  { value: 'cyan', bg: 'bg-cyan-100', border: 'border-cyan-300', text: 'text-cyan-800', dot: 'bg-cyan-500' },
-  { value: 'pink', bg: 'bg-pink-100', border: 'border-pink-300', text: 'text-pink-800', dot: 'bg-pink-400' },
-]
-
-const getColor = (value) => SUBJECT_COLORS.find(c => c.value === value) || SUBJECT_COLORS[0]
+const getColor = getSubjectColor
 
 const TUTOR_COLOR = { bg: 'bg-blue-50', border: 'border-blue-200', text: 'text-blue-800', dot: 'bg-blue-400' }
 
 function formatDate(d) {
   return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`
+}
+
+function toYMD(d) {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+}
+
+function formatYMD(str) {
+  if (!str) return ''
+  const [y, m, d] = str.split('-')
+  return `${d}/${m}/${y}`
 }
 
 function getDaysOfWeek() {
@@ -43,21 +43,21 @@ function getDaysOfWeek() {
 }
 
 function daysUntil(dateStr) {
-  const today = new Date(); today.setHours(0,0,0,0)
+  const today = new Date(); today.setHours(0, 0, 0, 0)
   const target = new Date(dateStr + 'T00:00:00')
   return Math.round((target - today) / 86400000)
 }
 
 function ExamBadge({ diff }) {
-  if (diff < 0)  return <span className="text-[10px] font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">Đã qua</span>
+  if (diff < 0) return <span className="text-[10px] font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">Đã qua</span>
   if (diff === 0) return <span className="text-[10px] font-bold text-white bg-red-500 px-2 py-0.5 rounded-full animate-pulse">Hôm nay!</span>
-  if (diff <= 3)  return <span className="text-[10px] font-bold text-red-700 bg-red-100 px-2 py-0.5 rounded-full">Còn {diff} ngày</span>
-  if (diff <= 7)  return <span className="text-[10px] font-bold text-orange-700 bg-orange-100 px-2 py-0.5 rounded-full">Còn {diff} ngày</span>
+  if (diff <= 3) return <span className="text-[10px] font-bold text-red-700 bg-red-100 px-2 py-0.5 rounded-full">Còn {diff} ngày</span>
+  if (diff <= 7) return <span className="text-[10px] font-bold text-orange-700 bg-orange-100 px-2 py-0.5 rounded-full">Còn {diff} ngày</span>
   return <span className="text-[10px] font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-full">Còn {diff} ngày</span>
 }
 
 // ── Slot form modal ──────────────────────────────────────────────────────────
-const EMPTY_SLOT = { day: 1, start_time: '07:30', end_time: '09:30', subject: '', room: '', teacher: '', color: 'violet' }
+const EMPTY_SLOT = { day: 1, start_time: '07:30', end_time: '09:30', subject: '', room: '', teacher: '', color: 'violet', start_date: '', end_date: '' }
 
 function SlotModal({ slot, onSave, onClose }) {
   const [form, setForm] = useState(slot || EMPTY_SLOT)
@@ -121,6 +121,18 @@ function SlotModal({ slot, onSave, onClose }) {
               <label className="text-xs font-bold text-slate-500 uppercase tracking-wide block mb-1.5">Giảng viên</label>
               <input value={form.teacher} onChange={e => set('teacher', e.target.value)}
                 placeholder="Thầy/Cô..."
+                className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20" />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="text-xs font-bold text-slate-500 uppercase tracking-wide block mb-1.5">Áp dụng từ (Tùy chọn)</label>
+              <input type="date" value={form.start_date || ''} onChange={e => set('start_date', e.target.value)}
+                className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20" />
+            </div>
+            <div>
+              <label className="text-xs font-bold text-slate-500 uppercase tracking-wide block mb-1.5">Đến ngày (Tùy chọn)</label>
+              <input type="date" value={form.end_date || ''} onChange={e => set('end_date', e.target.value)}
                 className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20" />
             </div>
           </div>
@@ -261,11 +273,12 @@ export default function Schedule() {
 
   const combinedByDay = DAYS.map((dayDef, i) => {
     const date = weekDays[i]
+    const dateStr = toYMD(date)
     const jsDay = date.getDay()
     const ourDay = jsDay === 0 ? 7 : jsDay // 1=Mon...7=Sun
 
     const schoolSlots = timetable
-      .filter(s => s.day === ourDay)
+      .filter(s => s.day === ourDay && (!s.start_date || s.start_date <= dateStr) && (!s.end_date || s.end_date >= dateStr))
       .map(s => ({ type: 'school', ...s }))
 
     const tutorSlots = tutorSchedules.flatMap(sch => {
@@ -298,11 +311,10 @@ export default function Schedule() {
       <div className="flex bg-white rounded-2xl border border-slate-200 shadow-sm p-1 mb-5">
         {tabs.map(t => (
           <button key={t.key} onClick={() => setTab(t.key)}
-            className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-bold transition-all ${
-              tab === t.key
-                ? 'bg-primary text-white shadow-sm'
-                : 'text-slate-500 hover:text-slate-700'
-            }`}>
+            className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-bold transition-all ${tab === t.key
+              ? 'bg-primary text-white shadow-sm'
+              : 'text-slate-500 hover:text-slate-700'
+              }`}>
             <span className="material-symbols-outlined text-[16px]">{t.icon}</span>
             <span className="hidden sm:inline">{t.label}</span>
             <span className="sm:hidden">{t.label.split(' ')[0]}</span>
@@ -345,6 +357,11 @@ export default function Schedule() {
                               <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full border ${c.bg} ${c.border} ${c.text}`}>Trường</span>
                             </div>
                             <p className="text-xs text-slate-400">{item.room || ''}{item.room && item.teacher ? ' · ' : ''}{item.teacher || ''}</p>
+                            {(item.start_date || item.end_date) && (
+                              <p className="text-[11px] text-slate-500 mt-1">
+                                Áp dụng: {item.start_date ? formatYMD(item.start_date) : '...'} → {item.end_date ? formatYMD(item.end_date) : '...'}
+                              </p>
+                            )}
                           </div>
                           <div className="text-right shrink-0">
                             <p className={`text-sm font-black ${c.text}`}>{item.start_time}</p>
@@ -450,6 +467,12 @@ export default function Schedule() {
                                 {slot.room && ` · ${slot.room}`}
                                 {slot.teacher && ` · ${slot.teacher}`}
                               </p>
+                              {(slot.start_date || slot.end_date) && (
+                                <p className="text-[11px] text-slate-500 mt-1 flex items-center gap-1 font-medium bg-slate-100 w-fit px-2 py-0.5 rounded-md">
+                                  <span className="material-symbols-outlined text-[13px]">calendar_clock</span>
+                                  Áp dụng: {slot.start_date ? formatYMD(slot.start_date) : '...'} → {slot.end_date ? formatYMD(slot.end_date) : '...'}
+                                </p>
+                              )}
                             </div>
                             <div className="flex gap-1">
                               <button onClick={() => setSlotModal(slot)}
