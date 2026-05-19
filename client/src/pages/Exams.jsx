@@ -47,7 +47,7 @@ function ExamModal({ exam, onSave, onClose }) {
             <div>
               <label className="text-xs font-bold text-slate-500 uppercase tracking-wide block mb-1.5">Giờ thi</label>
               <input type="time" value={form.start_time} onChange={e => set('start_time', e.target.value)}
-                className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-red-200" />
+                className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-[16px] sm:text-sm focus:outline-none focus:ring-2 focus:ring-red-200" />
             </div>
           </div>
           <div>

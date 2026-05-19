@@ -63,7 +63,7 @@ function SemesterModal({ sem, onSave, onDelete, onClose }) {
   )
 }
 
-const EMPTY = { day: 1, start_time: '07:30', end_time: '09:30', subject: '', room: '', teacher: '', color: 'violet', start_date: '', end_date: '' }
+const EMPTY = { day: 1, start_time: '07:30', end_time: '09:30', subject: '', room: '', teacher: '', color: 'violet' }
 
 function SlotModal({ slot, onSave, onClose }) {
   const [form, setForm] = useState(slot || EMPTY)
@@ -108,12 +108,12 @@ function SlotModal({ slot, onSave, onClose }) {
             <div>
               <label className="text-xs font-bold text-slate-500 uppercase tracking-wide block mb-1.5">Bắt đầu</label>
               <input type="time" value={form.start_time} onChange={e => set('start_time', e.target.value)}
-                className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-violet-300" />
+                className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-[16px] sm:text-sm focus:outline-none focus:ring-2 focus:ring-violet-300" />
             </div>
             <div>
               <label className="text-xs font-bold text-slate-500 uppercase tracking-wide block mb-1.5">Kết thúc</label>
               <input type="time" value={form.end_time} onChange={e => set('end_time', e.target.value)}
-                className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-violet-300" />
+                className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-[16px] sm:text-sm focus:outline-none focus:ring-2 focus:ring-violet-300" />
             </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -125,18 +125,6 @@ function SlotModal({ slot, onSave, onClose }) {
             <div>
               <label className="text-xs font-bold text-slate-500 uppercase tracking-wide block mb-1.5">Giảng viên</label>
               <input value={form.teacher} onChange={e => set('teacher', e.target.value)} placeholder="Thầy/Cô..."
-                className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-violet-300" />
-            </div>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label className="text-xs font-bold text-slate-500 uppercase tracking-wide block mb-1.5">Áp dụng từ (Tùy chọn)</label>
-              <input type="date" value={form.start_date || ''} onChange={e => set('start_date', e.target.value)}
-                className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-violet-300" />
-            </div>
-            <div>
-              <label className="text-xs font-bold text-slate-500 uppercase tracking-wide block mb-1.5">Đến ngày (Tùy chọn)</label>
-              <input type="date" value={form.end_date || ''} onChange={e => set('end_date', e.target.value)}
                 className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-violet-300" />
             </div>
           </div>
@@ -298,12 +286,6 @@ export default function Timetable() {
                             {slot.room ? ` · ${slot.room}` : ''}
                             {slot.teacher ? ` · ${slot.teacher}` : ''}
                           </p>
-                          {(slot.start_date || slot.end_date) && (
-                            <p className="text-[11px] text-slate-500 mt-1 flex items-center gap-1 font-medium bg-slate-100 w-fit px-2 py-0.5 rounded-md">
-                              <span className="material-symbols-outlined text-[13px]">calendar_clock</span>
-                              Áp dụng: {slot.start_date ? formatYMD(slot.start_date) : '...'} → {slot.end_date ? formatYMD(slot.end_date) : '...'}
-                            </p>
-                          )}
                         </div>
                         <div className="flex gap-1">
                           <button onClick={() => setModal(slot)}

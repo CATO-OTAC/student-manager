@@ -52,7 +52,7 @@ function getEventsForDate(date, timetable, tutorSchedules, studentMap, exams, se
   const semId = currentSem ? currentSem.id : null
 
   const schoolSlots = timetable
-    .filter(s => s.day === ourDay && s.semester_id === semId && (!s.start_date || s.start_date <= dateStr) && (!s.end_date || s.end_date >= dateStr))
+    .filter(s => s.day === ourDay && s.semester_id === semId)
     .map(s => ({ type: 'school', time: s.start_time, ...s }))
 
   const tutorSlots = tutorSchedules.flatMap(sch => {
@@ -88,11 +88,6 @@ function EventPill({ event, compact = false }) {
             <p className={`text-[10px] ${c.text} opacity-80`}>
               {event.start_time}–{event.end_time}{event.room ? ` · ${event.room}` : ''}
             </p>
-            {(event.start_date || event.end_date) && (
-              <p className={`text-[10px] ${c.text} opacity-80 mt-0.5`}>
-                Áp dụng: {event.start_date ? formatYMD(event.start_date) : '...'} → {event.end_date ? formatYMD(event.end_date) : '...'}
-              </p>
-            )}
           </div>
         )}
       </div>

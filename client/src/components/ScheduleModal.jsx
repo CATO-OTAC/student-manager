@@ -96,14 +96,14 @@ function DayScheduleEditor({ schedule, onChange }) {
                 type="time"
                 value={slot.start_time}
                 onChange={e => updateTime(slot.idx, 'start_time', e.target.value)}
-                className="border border-slate-200 rounded-lg px-3 py-2 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                className="border border-slate-200 rounded-lg px-3 py-2 text-[16px] sm:text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
               />
               <span className="text-slate-400 text-sm">—</span>
               <input
                 type="time"
                 value={slot.end_time}
                 onChange={e => updateTime(slot.idx, 'end_time', e.target.value)}
-                className="border border-slate-200 rounded-lg px-3 py-2 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                className="border border-slate-200 rounded-lg px-3 py-2 text-[16px] sm:text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
               />
               {day.slots.length > 1 && (
                 <button
