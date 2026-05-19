@@ -25,21 +25,21 @@ function SemesterModal({ sem, onSave, onDelete, onClose }) {
   return (
     <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-0 sm:p-4"
       onClick={e => e.target === e.currentTarget && onClose()}>
-      <div className="bg-white w-full sm:max-w-sm sm:rounded-2xl rounded-t-2xl shadow-xl overflow-hidden"
+      <div className="bg-white w-full sm:max-w-sm sm:rounded-2xl rounded-t-2xl shadow-xl flex flex-col max-h-[90vh]"
         style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
-        <div className="flex items-center justify-between px-5 pt-5 pb-4 border-b border-slate-100">
+        <div className="flex items-center justify-between px-5 pt-5 pb-4 border-b border-slate-100 shrink-0">
           <h3 className="font-bold text-slate-900">{sem === 'new' ? 'Thêm học kỳ' : 'Sửa học kỳ'}</h3>
           <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-500">
             <span className="material-symbols-outlined text-[20px]">close</span>
           </button>
         </div>
-        <div className="p-5 space-y-4">
+        <div className="p-5 space-y-4 overflow-y-auto">
           <div>
             <label className="text-xs font-bold text-slate-500 uppercase tracking-wide block mb-1.5">Tên học kỳ *</label>
             <input value={form.name} onChange={e => set('name', e.target.value)} placeholder="VD: Học kỳ 1 (2023-2024)" autoFocus
               className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-300" />
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="text-xs font-bold text-slate-500 uppercase tracking-wide block mb-1.5">Bắt đầu *</label>
               <input type="date" value={form.start_date || ''} onChange={e => set('start_date', e.target.value)}
@@ -52,7 +52,7 @@ function SemesterModal({ sem, onSave, onDelete, onClose }) {
             </div>
           </div>
         </div>
-        <div className="px-5 pb-5 flex gap-2">
+        <div className="px-5 pb-5 pt-3 flex gap-2 shrink-0 border-t border-slate-50">
           {sem !== 'new' && <button onClick={() => onDelete(form.id)} className="px-4 py-2.5 rounded-xl font-bold text-red-500 bg-red-50 hover:bg-red-100 text-sm">Xóa</button>}
           <button onClick={onClose} className="flex-1 py-2.5 rounded-xl font-bold text-slate-600 bg-slate-100 text-sm">Hủy</button>
           <button onClick={() => form.name && form.start_date && form.end_date && onSave(form)} disabled={!form.name || !form.start_date || !form.end_date}
@@ -71,22 +71,22 @@ function SlotModal({ slot, onSave, onClose }) {
   return (
     <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center"
       onClick={e => e.target === e.currentTarget && onClose()}>
-      <div className="bg-white w-full sm:max-w-sm sm:rounded-2xl rounded-t-2xl shadow-xl"
+      <div className="bg-white w-full sm:max-w-sm sm:rounded-2xl rounded-t-2xl shadow-xl flex flex-col max-h-[90vh]"
         style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
-        <div className="flex items-center justify-between px-5 pt-5 pb-4 border-b border-slate-100">
+        <div className="flex items-center justify-between px-5 pt-5 pb-4 border-b border-slate-100 shrink-0">
           <h3 className="font-bold text-slate-900">{slot ? 'Sửa môn học' : 'Thêm môn học'}</h3>
           <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-500">
             <span className="material-symbols-outlined text-[20px]">close</span>
           </button>
         </div>
-        <div className="px-5 py-4 space-y-3">
+        <div className="px-5 py-4 space-y-3 overflow-y-auto">
           <div>
             <label className="text-xs font-bold text-slate-500 uppercase tracking-wide block mb-1.5">Tên môn *</label>
             <input value={form.subject} onChange={e => set('subject', e.target.value)} autoFocus
               placeholder="Giải tích, LTMM..."
               className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-300 focus:border-violet-400" />
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="text-xs font-bold text-slate-500 uppercase tracking-wide block mb-1.5">Ngày học</label>
               <select value={form.day} onChange={e => set('day', Number(e.target.value))}
@@ -104,7 +104,7 @@ function SlotModal({ slot, onSave, onClose }) {
               </div>
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="text-xs font-bold text-slate-500 uppercase tracking-wide block mb-1.5">Bắt đầu</label>
               <input type="time" value={form.start_time} onChange={e => set('start_time', e.target.value)}
@@ -116,7 +116,7 @@ function SlotModal({ slot, onSave, onClose }) {
                 className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-300" />
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="text-xs font-bold text-slate-500 uppercase tracking-wide block mb-1.5">Phòng</label>
               <input value={form.room} onChange={e => set('room', e.target.value)} placeholder="A2.01"
@@ -128,7 +128,7 @@ function SlotModal({ slot, onSave, onClose }) {
                 className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-300" />
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="text-xs font-bold text-slate-500 uppercase tracking-wide block mb-1.5">Áp dụng từ (Tùy chọn)</label>
               <input type="date" value={form.start_date || ''} onChange={e => set('start_date', e.target.value)}
@@ -141,7 +141,7 @@ function SlotModal({ slot, onSave, onClose }) {
             </div>
           </div>
         </div>
-        <div className="px-5 pb-5 flex gap-2">
+        <div className="px-5 pb-5 pt-3 flex gap-2 shrink-0 border-t border-slate-50">
           <button onClick={onClose} className="flex-1 py-2.5 rounded-xl font-bold text-slate-600 bg-slate-100 text-sm">Hủy</button>
           <button onClick={() => form.subject.trim() && onSave(form)} disabled={!form.subject.trim()}
             className="flex-1 py-2.5 rounded-xl font-bold text-white bg-violet-600 text-sm disabled:opacity-50">

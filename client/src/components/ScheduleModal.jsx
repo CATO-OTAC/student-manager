@@ -257,7 +257,7 @@ export default function ScheduleModal({ student, onClose }) {
 
             {showForm && (
               <form onSubmit={handleSaveChange} className="bg-slate-50 rounded-xl p-4 mb-5 space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-bold text-slate-600 mb-1.5">Ngày bắt đầu</label>
                     <input type="date" required value={form.start_date}
@@ -266,7 +266,7 @@ export default function ScheduleModal({ student, onClose }) {
                   </div>
                   <div>
                     <label className="block text-xs font-bold text-slate-600 mb-2">Kiểu thay đổi</label>
-                    <div className="flex gap-4 mt-1">
+                    <div className="flex flex-wrap gap-4 mt-1">
                       {[['temporary', 'Tạm thời'], ['permanent', 'Vĩnh viễn']].map(([val, lab]) => (
                         <label key={val} className="flex items-center gap-1.5 text-sm cursor-pointer">
                           <input type="radio" value={val} checked={form.change_type === val}
