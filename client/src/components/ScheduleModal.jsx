@@ -96,14 +96,14 @@ function DayScheduleEditor({ schedule, onChange }) {
                 type="time"
                 value={slot.start_time}
                 onChange={e => updateTime(slot.idx, 'start_time', e.target.value)}
-                className="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                className="border border-slate-200 rounded-lg px-3 py-2 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
               />
               <span className="text-slate-400 text-sm">—</span>
               <input
                 type="time"
                 value={slot.end_time}
                 onChange={e => updateTime(slot.idx, 'end_time', e.target.value)}
-                className="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                className="border border-slate-200 rounded-lg px-3 py-2 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
               />
               {day.slots.length > 1 && (
                 <button
@@ -224,7 +224,7 @@ export default function ScheduleModal({ student, onClose }) {
       <div className="mb-4 flex items-center justify-between bg-slate-50 p-3 rounded-xl border border-slate-100">
         <span className="text-sm font-bold text-slate-700">Chọn học kỳ áp dụng:</span>
         <select value={activeSemId} onChange={e => setActiveSemId(e.target.value)} disabled={semesters.length === 0}
-          className="border border-slate-200 rounded-lg px-3 py-1.5 text-sm bg-white font-bold focus:outline-none focus:ring-2 focus:ring-primary/20">
+          className="border border-slate-200 rounded-lg px-3 py-1.5 text-base sm:text-sm bg-white font-bold focus:outline-none focus:ring-2 focus:ring-primary/20">
           {semesters.length === 0 ? <option value="">Chưa có học kỳ</option> : semesters.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
         </select>
       </div>
@@ -262,7 +262,7 @@ export default function ScheduleModal({ student, onClose }) {
                     <label className="block text-xs font-bold text-slate-600 mb-1.5">Ngày bắt đầu</label>
                     <input type="date" required value={form.start_date}
                       onChange={e => set('start_date', e.target.value)}
-                      className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" />
+                      className="w-full border border-slate-200 rounded-lg px-3 py-2 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" />
                   </div>
                   <div>
                     <label className="block text-xs font-bold text-slate-600 mb-2">Kiểu thay đổi</label>
@@ -290,7 +290,7 @@ export default function ScheduleModal({ student, onClose }) {
                       <input type="number" min={1} max={52} value={form.weeks}
                         disabled={form.duration_type !== 'weeks'}
                         onChange={e => set('weeks', e.target.value)}
-                        className="w-16 border border-slate-200 rounded-lg px-2 py-2 text-sm text-center disabled:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-primary/20" />
+                        className="w-16 border border-slate-200 rounded-lg px-2 py-2 text-base sm:text-sm text-center disabled:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-primary/20" />
                       <span className="text-sm text-slate-600">tuần — hoặc đến ngày</span>
                       <label className="flex items-center gap-1.5 text-sm cursor-pointer">
                         <input type="radio" value="date" checked={form.duration_type === 'date'}
@@ -299,7 +299,7 @@ export default function ScheduleModal({ student, onClose }) {
                       <input type="date" value={form.end_date}
                         disabled={form.duration_type !== 'date'}
                         onChange={e => set('end_date', e.target.value)}
-                        className="border border-slate-200 rounded-lg px-3 py-2 text-sm disabled:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-primary/20" />
+                        className="border border-slate-200 rounded-lg px-3 py-2 text-base sm:text-sm disabled:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-primary/20" />
                     </div>
                   </div>
                 )}
@@ -315,7 +315,7 @@ export default function ScheduleModal({ student, onClose }) {
                   <label className="block text-xs font-bold text-slate-600 mb-1.5">Ghi chú</label>
                   <input type="text" value={form.notes} onChange={e => set('notes', e.target.value)}
                     placeholder="Lý do thay đổi lịch..."
-                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" />
+                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" />
                 </div>
 
                 <div className="flex gap-2 pt-1">

@@ -36,30 +36,30 @@ function ExamModal({ exam, onSave, onClose }) {
             <label className="text-xs font-bold text-slate-500 uppercase tracking-wide block mb-1.5">Môn thi *</label>
             <input value={form.subject} onChange={e => set('subject', e.target.value)}
               placeholder="Giải tích..."
-              className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-red-200 focus:border-red-400" />
+              className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-red-200 focus:border-red-400" />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="text-xs font-bold text-slate-500 uppercase tracking-wide block mb-1.5">Ngày thi *</label>
               <input type="date" value={form.exam_date} onChange={e => set('exam_date', e.target.value)}
-                className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-red-200" />
+                className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-red-200" />
             </div>
             <div>
               <label className="text-xs font-bold text-slate-500 uppercase tracking-wide block mb-1.5">Giờ thi</label>
               <input type="time" value={form.start_time} onChange={e => set('start_time', e.target.value)}
-                className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-red-200" />
+                className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-red-200" />
             </div>
           </div>
           <div>
             <label className="text-xs font-bold text-slate-500 uppercase tracking-wide block mb-1.5">Phòng thi</label>
             <input value={form.location} onChange={e => set('location', e.target.value)} placeholder="H1.01..."
-              className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-red-200" />
+              className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-red-200" />
           </div>
           <div>
             <label className="text-xs font-bold text-slate-500 uppercase tracking-wide block mb-1.5">Ghi chú</label>
             <input value={form.notes} onChange={e => set('notes', e.target.value)}
               placeholder="Thi tự luận, được mang tài liệu..."
-              className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-red-200" />
+              className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-red-200" />
           </div>
         </div>
         <div className="px-5 pb-5 pt-3 flex gap-2 shrink-0 border-t border-slate-50">

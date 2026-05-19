@@ -37,18 +37,18 @@ function SemesterModal({ sem, onSave, onDelete, onClose }) {
           <div>
             <label className="text-xs font-bold text-slate-500 uppercase tracking-wide block mb-1.5">Tên học kỳ *</label>
             <input value={form.name} onChange={e => set('name', e.target.value)} placeholder="VD: Học kỳ 1 (2023-2024)"
-              className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-300" />
+              className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-violet-300" />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="text-xs font-bold text-slate-500 uppercase tracking-wide block mb-1.5">Bắt đầu *</label>
               <input type="date" value={form.start_date || ''} onChange={e => set('start_date', e.target.value)}
-                className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-300" />
+                className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-violet-300" />
             </div>
             <div>
               <label className="text-xs font-bold text-slate-500 uppercase tracking-wide block mb-1.5">Kết thúc *</label>
               <input type="date" value={form.end_date || ''} onChange={e => set('end_date', e.target.value)}
-                className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-300" />
+                className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-violet-300" />
             </div>
           </div>
         </div>
@@ -84,13 +84,13 @@ function SlotModal({ slot, onSave, onClose }) {
             <label className="text-xs font-bold text-slate-500 uppercase tracking-wide block mb-1.5">Tên môn *</label>
             <input value={form.subject} onChange={e => set('subject', e.target.value)}
               placeholder="Giải tích, LTMM..."
-              className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-300 focus:border-violet-400" />
+              className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-violet-300 focus:border-violet-400" />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="text-xs font-bold text-slate-500 uppercase tracking-wide block mb-1.5">Ngày học</label>
               <select value={form.day} onChange={e => set('day', Number(e.target.value))}
-                className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-violet-300">
+                className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-base sm:text-sm bg-white focus:outline-none focus:ring-2 focus:ring-violet-300">
                 {DAYS.map(d => <option key={d.value} value={d.value}>{d.label}</option>)}
               </select>
             </div>
@@ -108,36 +108,36 @@ function SlotModal({ slot, onSave, onClose }) {
             <div>
               <label className="text-xs font-bold text-slate-500 uppercase tracking-wide block mb-1.5">Bắt đầu</label>
               <input type="time" value={form.start_time} onChange={e => set('start_time', e.target.value)}
-                className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-300" />
+                className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-violet-300" />
             </div>
             <div>
               <label className="text-xs font-bold text-slate-500 uppercase tracking-wide block mb-1.5">Kết thúc</label>
               <input type="time" value={form.end_time} onChange={e => set('end_time', e.target.value)}
-                className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-300" />
+                className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-violet-300" />
             </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="text-xs font-bold text-slate-500 uppercase tracking-wide block mb-1.5">Phòng</label>
               <input value={form.room} onChange={e => set('room', e.target.value)} placeholder="A2.01"
-                className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-300" />
+                className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-violet-300" />
             </div>
             <div>
               <label className="text-xs font-bold text-slate-500 uppercase tracking-wide block mb-1.5">Giảng viên</label>
               <input value={form.teacher} onChange={e => set('teacher', e.target.value)} placeholder="Thầy/Cô..."
-                className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-300" />
+                className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-violet-300" />
             </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="text-xs font-bold text-slate-500 uppercase tracking-wide block mb-1.5">Áp dụng từ (Tùy chọn)</label>
               <input type="date" value={form.start_date || ''} onChange={e => set('start_date', e.target.value)}
-                className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-300" />
+                className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-violet-300" />
             </div>
             <div>
               <label className="text-xs font-bold text-slate-500 uppercase tracking-wide block mb-1.5">Đến ngày (Tùy chọn)</label>
               <input type="date" value={form.end_date || ''} onChange={e => set('end_date', e.target.value)}
-                className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-300" />
+                className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-violet-300" />
             </div>
           </div>
         </div>
@@ -242,7 +242,7 @@ export default function Timetable() {
           {semesters.length > 0 ? (
             <>
               <select value={activeSemId} onChange={e => setActiveSemId(e.target.value)}
-                className="flex-1 bg-transparent border-none py-1.5 px-2 text-sm font-bold text-slate-700 focus:outline-none focus:ring-0 min-w-0">
+                className="flex-1 bg-transparent border-none py-1.5 px-2 text-base sm:text-sm font-bold text-slate-700 focus:outline-none focus:ring-0 min-w-0">
                 {semesters.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
               </select>
               <div className="w-px h-5 bg-slate-200 mx-1 shrink-0" />

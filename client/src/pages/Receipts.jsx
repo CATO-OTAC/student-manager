@@ -338,11 +338,11 @@ export default function Receipts() {
         <h1 className="text-xl font-bold text-slate-900 font-manrope mb-3">Phiếu học phí</h1>
         <div className="flex items-center gap-2">
           <select value={month} onChange={e => setMonth(Number(e.target.value))}
-            className="flex-1 border border-slate-200 rounded-xl px-3 py-2.5 text-sm bg-white font-bold focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
+            className="flex-1 border border-slate-200 rounded-xl px-3 py-2.5 text-base sm:text-sm bg-white font-bold focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
             {months.map(m => <option key={m} value={m}>Tháng {m}</option>)}
           </select>
           <select value={year} onChange={e => setYear(Number(e.target.value))}
-            className="w-24 border border-slate-200 rounded-xl px-3 py-2.5 text-sm bg-white font-bold focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
+            className="w-24 border border-slate-200 rounded-xl px-3 py-2.5 text-base sm:text-sm bg-white font-bold focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
             {years.map(y => <option key={y} value={y}>{y}</option>)}
           </select>
           <button onClick={exportAll} disabled={sessions.length === 0 || printingAll}

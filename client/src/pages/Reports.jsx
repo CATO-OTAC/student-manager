@@ -3,8 +3,8 @@ import { TeachNav } from '../components/SectionNav'
 import { sessionsApi } from '../lib/api'
 
 const now = new Date()
-const MONTH_NAMES = ['Tháng 1','Tháng 2','Tháng 3','Tháng 4','Tháng 5','Tháng 6',
-                     'Tháng 7','Tháng 8','Tháng 9','Tháng 10','Tháng 11','Tháng 12']
+const MONTH_NAMES = ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6',
+  'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12']
 
 function StatCard({ icon, label, value, iconBg }) {
   return (
@@ -69,9 +69,8 @@ export default function Reports() {
         <div className="flex gap-1 bg-slate-100 rounded-lg p-1">
           {[['month', 'Theo tháng'], ['year', 'Theo năm']].map(([val, label]) => (
             <button key={val} onClick={() => setPeriod(val)}
-              className={`px-4 py-1.5 rounded-md text-sm font-bold transition-all ${
-                period === val ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'
-              }`}>
+              className={`px-4 py-1.5 rounded-md text-sm font-bold transition-all ${period === val ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'
+                }`}>
               {label}
             </button>
           ))}
@@ -80,18 +79,18 @@ export default function Reports() {
         {period === 'month' && (
           <>
             <select value={month} onChange={e => setMonth(Number(e.target.value))}
-              className="border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
+              className="border border-slate-200 rounded-lg px-3 py-2 text-base sm:text-sm bg-white font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
               {months.map(m => <option key={m} value={m}>Tháng {m}</option>)}
             </select>
             <select value={year} onChange={e => setYear(Number(e.target.value))}
-              className="border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
+              className="border border-slate-200 rounded-lg px-3 py-2 text-base sm:text-sm bg-white font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
               {years.map(y => <option key={y} value={y}>{y}</option>)}
             </select>
           </>
         )}
         {period === 'year' && (
           <select value={year} onChange={e => setYear(Number(e.target.value))}
-            className="border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
+            className="border border-slate-200 rounded-lg px-3 py-2 text-base sm:text-sm bg-white font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
             {years.map(y => <option key={y} value={y}>{y}</option>)}
           </select>
         )}

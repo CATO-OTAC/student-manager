@@ -49,12 +49,12 @@ function HomeworkForm({ item, onSave, onClose }) {
               <label className="text-xs font-bold text-slate-500 uppercase tracking-wide block mb-1.5">Môn học *</label>
               <input value={form.subject} onChange={e => set('subject', e.target.value)}
                 placeholder="Giải tích..."
-                className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" />
+                className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" />
             </div>
             <div>
               <label className="text-xs font-bold text-slate-500 uppercase tracking-wide block mb-1.5">Độ ưu tiên</label>
               <select value={form.priority} onChange={e => set('priority', e.target.value)}
-                className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary/20">
+                className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-base sm:text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary/20">
                 <option value="high">🔴 Gấp</option>
                 <option value="normal">🔵 Bình thường</option>
                 <option value="low">⚪ Thoải mái</option>
@@ -65,18 +65,18 @@ function HomeworkForm({ item, onSave, onClose }) {
             <label className="text-xs font-bold text-slate-500 uppercase tracking-wide block mb-1.5">Nội dung / Tên bài *</label>
             <input value={form.title} onChange={e => set('title', e.target.value)}
               placeholder="Làm bài tập chương 3, đọc tài liệu..."
-              className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" />
+              className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" />
           </div>
           <div>
             <label className="text-xs font-bold text-slate-500 uppercase tracking-wide block mb-1.5">Deadline</label>
             <input type="date" value={form.due_date} onChange={e => set('due_date', e.target.value)}
-              className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20" />
+              className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-primary/20" />
           </div>
           <div>
             <label className="text-xs font-bold text-slate-500 uppercase tracking-wide block mb-1.5">Ghi chú</label>
             <input value={form.notes} onChange={e => set('notes', e.target.value)}
               placeholder="Trang 45-60, submit trên Moodle..."
-              className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20" />
+              className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-primary/20" />
           </div>
         </div>
         <div className="px-5 pb-5 pt-3 flex gap-2 shrink-0 border-t border-slate-50">

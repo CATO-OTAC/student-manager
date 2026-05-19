@@ -96,7 +96,7 @@ export default function Classes() {
                 required
                 value={form.name}
                 onChange={e => setForm({ name: e.target.value })}
-                className="w-full px-4 py-2.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium"
+                className="w-full px-4 py-2.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-base sm:text-sm font-medium"
                 placeholder="VD: Toán 10, Anh Văn 8..."
               />
             </div>

@@ -327,14 +327,14 @@ export default function Students() {
             <div>
               <label className="block text-sm font-bold text-slate-700 mb-1.5">Tên học sinh *</label>
               <input required type="text" value={form.name} onChange={e => set('name', e.target.value)}
-                className="w-full px-4 py-2.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium" />
+                className="w-full px-4 py-2.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-base sm:text-sm font-medium" />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-bold text-slate-700 mb-1.5">Lớp</label>
                 <select value={form.class_name} onChange={e => set('class_name', e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium bg-white">
+                  className="w-full px-4 py-2.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-base sm:text-sm font-medium bg-white">
                   <option value="">— Chọn lớp —</option>
                   {CLASS_OPTIONS.map(c => <option key={c} value={c}>{c}</option>)}
                 </select>
@@ -344,19 +344,19 @@ export default function Students() {
                 <input required type="number" min={0} value={form.fee_per_session}
                   onChange={e => set('fee_per_session', e.target.value)}
                   placeholder="VD: 100000"
-                  className="w-full px-4 py-2.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium" />
+                  className="w-full px-4 py-2.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-base sm:text-sm font-medium" />
               </div>
             </div>
 
             <div>
               <label className="block text-sm font-bold text-slate-700 mb-1.5">Tên phụ huynh</label>
               <input type="text" value={form.parent_name} onChange={e => set('parent_name', e.target.value)}
-                className="w-full px-4 py-2.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium" />
+                className="w-full px-4 py-2.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-base sm:text-sm font-medium" />
             </div>
             <div>
               <label className="block text-sm font-bold text-slate-700 mb-1.5">Số điện thoại phụ huynh</label>
               <input type="tel" value={form.parent_phone} onChange={e => set('parent_phone', e.target.value)}
-                className="w-full px-4 py-2.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium" />
+                className="w-full px-4 py-2.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-base sm:text-sm font-medium" />
             </div>
 
             <div className="flex gap-3 pt-2 border-t border-slate-100 mt-2">
