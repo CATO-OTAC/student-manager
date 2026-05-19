@@ -225,31 +225,41 @@ export default function Timetable() {
   return (
     <div className="max-w-2xl mx-auto">
       <StudyNav />
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-3">
+
+      <div className="mb-5">
+        <div className="flex items-center justify-between mb-3">
           <h1 className="text-xl font-bold text-slate-900 font-manrope">Thời khóa biểu</h1>
-          {semesters.length > 0 && (
-            <select value={activeSemId} onChange={e => setActiveSemId(e.target.value)}
-              className="border border-slate-200 rounded-xl px-3 py-1.5 text-sm bg-white font-bold focus:outline-none focus:ring-2 focus:ring-violet-300">
-              {semesters.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-            </select>
-          )}
-          {semesters.length > 0 && activeSemId && (
-            <button onClick={() => setSemModal(semesters.find(s => s.id === activeSemId))} title="Sửa học kỳ"
-              className="text-violet-600 hover:bg-violet-50 w-8 h-8 rounded-full flex items-center justify-center transition-colors">
-              <span className="material-symbols-outlined text-[18px]">settings</span>
-            </button>
-          )}
-          <button onClick={() => setSemModal('new')} title="Thêm học kỳ mới"
-            className="text-violet-600 hover:bg-violet-50 w-8 h-8 rounded-full flex items-center justify-center transition-colors">
-            <span className="material-symbols-outlined text-[18px]">add_circle</span>
+          <button onClick={() => setModal('new')} disabled={!activeSemId}
+            className="flex items-center gap-1.5 bg-violet-600 text-white px-4 py-2.5 rounded-xl text-sm font-bold shadow-md shadow-violet-200 disabled:opacity-50 transition-opacity">
+            <span className="material-symbols-outlined text-[18px]">add</span>
+            <span className="hidden sm:inline">Thêm môn</span>
+            <span className="sm:hidden">Thêm</span>
           </button>
         </div>
-        <button onClick={() => setModal('new')} disabled={!activeSemId}
-          className="flex items-center gap-1.5 bg-violet-600 text-white px-4 py-2.5 rounded-xl text-sm font-bold shadow-md shadow-violet-200 disabled:opacity-50">
-          <span className="material-symbols-outlined text-[18px]">add</span>
-          Thêm môn
-        </button>
+
+        {/* Thanh quản lý Học kỳ */}
+        <div className="flex items-center gap-2 bg-white p-1.5 rounded-xl border border-slate-200 shadow-sm">
+          {semesters.length > 0 ? (
+            <>
+              <select value={activeSemId} onChange={e => setActiveSemId(e.target.value)}
+                className="flex-1 bg-transparent border-none py-1.5 px-2 text-sm font-bold text-slate-700 focus:outline-none focus:ring-0 min-w-0">
+                {semesters.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+              </select>
+              <div className="w-px h-5 bg-slate-200 mx-1 shrink-0" />
+              <button onClick={() => setSemModal(semesters.find(s => s.id === activeSemId))} title="Sửa học kỳ"
+                className="text-slate-400 hover:text-violet-600 hover:bg-violet-50 w-8 h-8 rounded-lg flex items-center justify-center transition-colors shrink-0">
+                <span className="material-symbols-outlined text-[18px]">edit</span>
+              </button>
+            </>
+          ) : (
+            <div className="flex-1 py-1.5 px-3 text-sm text-slate-400 font-medium">Chưa có học kỳ</div>
+          )}
+          <button onClick={() => setSemModal('new')} title="Thêm học kỳ mới"
+            className="text-violet-600 bg-violet-50 hover:bg-violet-100 px-3 h-8 rounded-lg flex items-center gap-1 text-xs font-bold transition-colors shrink-0">
+            <span className="material-symbols-outlined text-[16px]">add</span>
+            <span className="hidden sm:inline">Học kỳ</span>
+          </button>
+        </div>
       </div>
 
       {!activeSemId ? (
