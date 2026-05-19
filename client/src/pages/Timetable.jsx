@@ -23,9 +23,10 @@ function SemesterModal({ sem, onSave, onDelete, onClose }) {
   const [form, setForm] = useState(sem === 'new' ? { name: '', start_date: '', end_date: '' } : sem)
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
   return (
-    <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+    <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-0 sm:p-4"
       onClick={e => e.target === e.currentTarget && onClose()}>
-      <div className="bg-white w-full max-w-sm rounded-2xl shadow-xl overflow-hidden">
+      <div className="bg-white w-full sm:max-w-sm sm:rounded-2xl rounded-t-2xl shadow-xl overflow-hidden"
+        style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
         <div className="flex items-center justify-between px-5 pt-5 pb-4 border-b border-slate-100">
           <h3 className="font-bold text-slate-900">{sem === 'new' ? 'Thêm học kỳ' : 'Sửa học kỳ'}</h3>
           <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-500">

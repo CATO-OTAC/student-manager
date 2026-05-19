@@ -206,7 +206,7 @@ export default function Calendar() {
             const examEvents = events.filter(e => e.type === 'exam')
             return (
               <button key={idx} onClick={() => setSelectedDate(date)}
-                className={`flex flex-col items-center py-1.5 gap-0.5 min-h-[52px] border-b border-r border-slate-50 transition-colors ${isSelected ? 'bg-blue-50' : 'hover:bg-slate-50'
+                className={`flex flex-col items-center py-1.5 gap-0.5 min-h-[64px] border-b border-r border-slate-50 transition-colors ${isSelected ? 'bg-blue-50' : 'hover:bg-slate-50'
                   } ${!isCurrentMonth ? 'opacity-30' : ''}`}>
                 <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${isSelected ? 'bg-primary text-white' :
                   isToday ? 'bg-blue-100 text-primary font-black' : 'text-slate-700'

@@ -41,9 +41,10 @@ function StudentDetailModal({ student, schedule, colorIdx, onEdit, onDelete, onS
   const color = AVATAR_COLORS[colorIdx % AVATAR_COLORS.length]
 
   return (
-    <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+    <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-0 sm:p-4"
       onClick={e => { if (e.target === e.currentTarget) onClose() }}>
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden">
+      <div className="bg-white w-full sm:max-w-sm sm:rounded-2xl rounded-t-2xl shadow-xl overflow-hidden"
+        style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
 
         {/* Header */}
         <div className="px-6 pt-8 pb-6 text-center border-b border-slate-100 relative">
@@ -119,10 +120,10 @@ function StudentDetailModal({ student, schedule, colorIdx, onEdit, onDelete, onS
 
 // ─── Main page ─────────────────────────────────────────────────────────────────
 export default function Students() {
-  const [students, setStudents]       = useState([])
+  const [students, setStudents] = useState([])
   const [scheduleMap, setScheduleMap] = useState({})
   const [detailStudent, setDetailStudent] = useState(null)   // student being viewed
-  const [editModal, setEditModal]     = useState(false)
+  const [editModal, setEditModal] = useState(false)
   const [scheduleModal, setScheduleModal] = useState(null)   // student for schedule modal
   const [form, setForm] = useState(EMPTY)
   const [editId, setEditId] = useState(null)
@@ -226,7 +227,7 @@ export default function Students() {
           </div>
         ) : (
           <>
-            <table className="w-full text-left border-collapse min-w-[600px]">
+            <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-slate-50">
                   <th className="px-4 py-3.5 text-[10px] uppercase tracking-widest font-bold text-slate-500">Học sinh</th>

@@ -27,19 +27,19 @@ const sections = [
 
 // Desktop sidebar cũng có full sub-nav
 const sidebarItems = [
-  { section: 'Lịch',    to: '/calendar',   icon: 'calendar_month',  label: 'Lịch'             },
-  { section: 'Gia sư',  to: '/students',   icon: 'group',           label: 'Học sinh'          },
-  { section: 'Gia sư',  to: '/sessions',   icon: 'fact_check',      label: 'Điểm danh'         },
-  { section: 'Gia sư',  to: '/reports',    icon: 'bar_chart',       label: 'Báo cáo'           },
-  { section: 'Gia sư',  to: '/receipts',   icon: 'receipt_long',    label: 'Phiếu học phí'     },
-  { section: 'Học tập', to: '/timetable',  icon: 'table_chart',     label: 'Thời khóa biểu'    },
-  { section: 'Học tập', to: '/homework',   icon: 'assignment',      label: 'Bài tập'           },
-  { section: 'Học tập', to: '/exams',      icon: 'quiz',            label: 'Lịch thi'          },
+  { section: 'Lịch', to: '/calendar', icon: 'calendar_month', label: 'Lịch' },
+  { section: 'Gia sư', to: '/students', icon: 'group', label: 'Học sinh' },
+  { section: 'Gia sư', to: '/sessions', icon: 'fact_check', label: 'Điểm danh' },
+  { section: 'Gia sư', to: '/reports', icon: 'bar_chart', label: 'Báo cáo' },
+  { section: 'Gia sư', to: '/receipts', icon: 'receipt_long', label: 'Phiếu học phí' },
+  { section: 'Học tập', to: '/timetable', icon: 'table_chart', label: 'Thời khóa biểu' },
+  { section: 'Học tập', to: '/homework', icon: 'assignment', label: 'Bài tập' },
+  { section: 'Học tập', to: '/exams', icon: 'quiz', label: 'Lịch thi' },
 ]
 
 const SECTION_COLORS = {
-  'Lịch':    { active: 'text-primary border-primary bg-blue-50',    dot: 'bg-primary'    },
-  'Gia sư':  { active: 'text-blue-700 border-blue-700 bg-blue-50',  dot: 'bg-blue-600'  },
+  'Lịch': { active: 'text-primary border-primary bg-blue-50', dot: 'bg-primary' },
+  'Gia sư': { active: 'text-blue-700 border-blue-700 bg-blue-50', dot: 'bg-blue-600' },
   'Học tập': { active: 'text-violet-700 border-violet-600 bg-violet-50', dot: 'bg-violet-600' },
 }
 
@@ -88,30 +88,29 @@ export default function Layout() {
       {/* ── Main content ───────────────────────────────────────────────────── */}
       <main className="lg:ml-64 min-h-screen flex flex-col">
         {/* Mobile top bar */}
-        <header className="lg:hidden sticky top-0 z-40 bg-white border-b border-slate-200 flex items-center"
-          style={{ paddingTop: 'env(safe-area-inset-top)', paddingLeft: '1rem', paddingRight: '1rem', paddingBottom: '0.75rem' }}>
+        <header className="lg:hidden sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200 flex items-center min-h-[60px]"
+          style={{ paddingTop: 'max(0.75rem, env(safe-area-inset-top))', paddingLeft: '1rem', paddingRight: '1rem', paddingBottom: '0.75rem' }}>
           <span className="text-lg font-black tracking-tighter text-blue-800 font-manrope">Aymond</span>
           {activeSection && (
             <span className="ml-2 text-xs font-bold text-slate-400">/ {activeSection.label}</span>
           )}
         </header>
 
-        <div className="flex-1 p-4 md:p-6 lg:p-8 pb-24 lg:pb-8">
+        <div className="flex-1 p-4 md:p-6 lg:p-8 pb-28 lg:pb-8">
           <Outlet />
         </div>
       </main>
 
       {/* ── Mobile bottom nav — 3 section chính ───────────────────────────── */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-slate-200"
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-t border-slate-200"
         style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
         <div className="flex">
           {sections.map(section => {
             const isActive = section.paths.some(p => pathname.startsWith(p))
             return (
               <NavLink key={section.to} to={section.to}
-                className={`flex-1 flex flex-col items-center justify-center py-2.5 gap-0.5 transition-colors ${
-                  isActive ? section.activeColor : 'text-slate-400'
-                }`}>
+                className={`flex-1 flex flex-col items-center justify-center py-2.5 gap-0.5 transition-all active:scale-95 ${isActive ? section.activeColor : 'text-slate-400'
+                  }`}>
                 <span className="material-symbols-outlined text-[24px]"
                   style={{ fontVariationSettings: isActive ? "'FILL' 1" : "'FILL' 0" }}>
                   {section.icon}
